@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/dengpju/higo-router/router"
 )
 
@@ -38,4 +39,7 @@ func main()  {
 
 	router.AddRoute("GET","/x1-r1", "x1-r1-hand")
 
+	fmt.Println(len(router.GetRoutes()))
+	router.Clear()
+	fmt.Println(len(router.GetRoutes()))
 }

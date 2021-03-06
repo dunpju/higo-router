@@ -79,6 +79,10 @@ func GetRoutes() Routes {
 	return routes
 }
 
+func Clear()  {
+	routes = nil
+}
+
 type RouteAttributes []*RouteAttribute
 
 func (this RouteAttributes) Find(name string) interface{} {
