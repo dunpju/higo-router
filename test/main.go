@@ -42,4 +42,6 @@ func main()  {
 	fmt.Println(len(router.GetRoutes()))
 	router.Clear()
 	fmt.Println(len(router.GetRoutes()))
+	router.AddRoute("GET","/t1-r1", "t1-r1-hand")
+	fmt.Println(len(router.GetRoutes()))
 }
