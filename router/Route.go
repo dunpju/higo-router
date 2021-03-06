@@ -10,6 +10,7 @@ const (
 	ROUTE_FRONTPATH     = "frontPath"
 	ROUTE_IS_STATIC     = "isStatic"
 	ROUTE_DESC          = "desc"
+	ROUTE_MIDDLEWARE    = "middleware"
 )
 
 type Route struct {
@@ -20,6 +21,7 @@ type Route struct {
 	frontPath    string      // 前端 path(前端菜单路由)
 	isStatic     bool        // 是否静态文件
 	desc         string      // 描述
+	middleware   interface{} // 中间件
 }
 
 type Routes []*Route
@@ -32,6 +34,11 @@ func AppendRoutes(route *Route) {
 		routes = make(Routes, 0)
 	})
 	routes = append(routes, route)
+}
+
+// 获取路由集
+func GetRoutes() Routes {
+	return routes
 }
 
 type RouteAttributes []*RouteAttribute
@@ -54,18 +61,6 @@ func NewRouteAttribute(name string, value interface{}) *RouteAttribute {
 	return &RouteAttribute{Name: name, Value: value}
 }
 
-func Method(value string) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_METHOD, value)
-}
-
-func RelativePath(value string) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_RELATIVE_PATH, value)
-}
-
-func Handle(value interface{}) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_HANDLE, value)
-}
-
 func Flag(value string) *RouteAttribute {
 	return NewRouteAttribute(ROUTE_FLAG, value)
 }
@@ -80,4 +75,8 @@ func IsStatic(value bool) *RouteAttribute {
 
 func Desc(value string) *RouteAttribute {
 	return NewRouteAttribute(ROUTE_DESC, value)
+}
+
+func Middleware(value string) *RouteAttribute {
+	return NewRouteAttribute(ROUTE_MIDDLEWARE, value)
 }
