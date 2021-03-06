@@ -42,7 +42,7 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 	route.groupPrefix = currentGroupPrefix
 	route.method = httpMethod
 	route.relativePath = relativePath
-	route.Handle = handler
+	route.handle = handler
 	for _, attribute := range attributes {
 		if attribute.Name == ROUTE_FLAG {
 			route.flag = attribute.Value.(string)

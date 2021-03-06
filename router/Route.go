@@ -18,7 +18,7 @@ type Route struct {
 	groupPrefix  string      // 组前缀
 	method       string      // 请求方法 GET/POST/DELETE/PATCH/OPTIONS/HEAD
 	relativePath string      // 后端 api relativePath
-	Handle       interface{} // 后端控制器函数
+	handle       interface{} // 后端控制器函数
 	flag         string      // 后端控制器函数标记
 	frontPath    string      // 前端 path(前端菜单路由)
 	isStatic     bool        // 是否静态文件
@@ -36,6 +36,10 @@ func (this *Route) Method() string {
 
 func (this *Route) RelativePath() string {
 	return this.relativePath
+}
+
+func (this *Route) Handle() interface{} {
+	return this.handle
 }
 
 func (this *Route) Flag() string {
