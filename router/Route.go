@@ -26,6 +26,42 @@ type Route struct {
 	middleware   interface{} // 中间件
 }
 
+func (this *Route) Prefix() string {
+	return this.groupPrefix
+}
+
+func (this *Route) Method() string {
+	return this.method
+}
+
+func (this *Route) RelativePath() string {
+	return this.relativePath
+}
+
+func (this *Route) Handle() interface{} {
+	return this.handle
+}
+
+func (this *Route) Flag() string {
+	return this.flag
+}
+
+func (this *Route) FrontPath() string {
+	return this.frontPath
+}
+
+func (this *Route) IsStatic() bool {
+	return this.isStatic
+}
+
+func (this *Route) Desc() string {
+	return this.desc
+}
+
+func (this *Route) Middleware() interface{} {
+	return this.middleware
+}
+
 type Routes []*Route
 
 var routes Routes
