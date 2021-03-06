@@ -39,6 +39,7 @@ func Head(relativePath string, handler interface{}, attributes ...*RouteAttribut
 
 func addRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
 	route := &Route{}
+	route.groupPrefix = currentGroupPrefix
 	route.method = httpMethod
 	route.relativePath = currentGroupPrefix + relativePath
 	route.handle = handler

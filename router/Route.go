@@ -3,6 +3,7 @@ package router
 import "sync"
 
 const (
+	ROUTE_PREFIX        = "prefix"
 	ROUTE_METHOD        = "method"
 	ROUTE_RELATIVE_PATH = "relativePath"
 	ROUTE_HANDLE        = "handle"
@@ -14,6 +15,7 @@ const (
 )
 
 type Route struct {
+	groupPrefix  string      // 组前缀
 	method       string      // 请求方法 GET/POST/DELETE/PATCH/OPTIONS/HEAD
 	relativePath string      // 后端 api relativePath
 	handle       interface{} // 后端控制器函数
