@@ -12,6 +12,7 @@ const (
 	ROUTE_IS_STATIC     = "isStatic"
 	ROUTE_DESC          = "desc"
 	ROUTE_MIDDLEWARE    = "middleware"
+	ROUTE_GROUP_MIDDLE  = "groupMiddle"
 )
 
 type Route struct {
@@ -24,6 +25,7 @@ type Route struct {
 	isStatic     bool        // 是否静态文件
 	desc         string      // 描述
 	middleware   interface{} // 中间件
+	groupMiddle  interface{} // 组中间件
 }
 
 func (this *Route) Prefix() string {
@@ -62,6 +64,10 @@ func (this *Route) Middleware() interface{} {
 	return this.middleware
 }
 
+func (this *Route) GroupMiddle() interface{} {
+	return this.groupMiddle
+}
+
 type Routes []*Route
 
 var routes Routes
@@ -79,7 +85,7 @@ func GetRoutes() Routes {
 	return routes
 }
 
-func Clear()  {
+func Clear() {
 	routes = nil
 }
 
@@ -121,4 +127,8 @@ func Desc(value string) *RouteAttribute {
 
 func Middleware(value string) *RouteAttribute {
 	return NewRouteAttribute(ROUTE_MIDDLEWARE, value)
+}
+
+func GroupMiddle(value string) *RouteAttribute {
+	return NewRouteAttribute(ROUTE_GROUP_MIDDLE, value)
 }

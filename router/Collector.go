@@ -40,6 +40,7 @@ func Head(relativePath string, handler interface{}, attributes ...*RouteAttribut
 func addRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
 	route := &Route{}
 	route.groupPrefix = currentGroupPrefix
+	route.groupMiddle = currentGroupMiddleware
 	route.method = httpMethod
 	route.relativePath = relativePath
 	route.handle = handler
@@ -61,15 +62,15 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 
 func addGroup(prefix string, callable interface{}, attributes ...*RouteAttribute) {
 	previousGroupPrefix := currentGroupPrefix
-	currentGroupMiddle := currentGroupMiddleware
+	previousGroupMiddle := currentGroupMiddleware
 
 	currentGroupPrefix = previousGroupPrefix + prefix
-	currentGroupMiddleware = RouteAttributes(attributes).Find(ROUTE_MIDDLEWARE)
+	currentGroupMiddleware = RouteAttributes(attributes).Find(ROUTE_GROUP_MIDDLE)
 
 	if fun, ok := callable.(func()); ok {
 		fun() // 执行
 	}
 
 	currentGroupPrefix = previousGroupPrefix
-	currentGroupMiddleware = currentGroupMiddle
+	currentGroupMiddleware = previousGroupMiddle
 }
