@@ -16,16 +16,16 @@ const (
 )
 
 type Route struct {
-	groupPrefix  string      // 组前缀
-	method       string      // 请求方法 GET/POST/DELETE/PATCH/OPTIONS/HEAD
-	relativePath string      // 后端 api relativePath
-	handle       interface{} // 后端控制器函数
-	flag         string      // 后端控制器函数标记
-	frontPath    string      // 前端 path(前端菜单路由)
-	isStatic     bool        // 是否静态文件
-	desc         string      // 描述
-	middleware   interface{} // 中间件
-	groupMiddle  interface{} // 组中间件
+	groupPrefix  string        // 组前缀
+	method       string        // 请求方法 GET/POST/DELETE/PATCH/OPTIONS/HEAD
+	relativePath string        // 后端 api relativePath
+	handle       interface{}   // 后端控制器函数
+	flag         string        // 后端控制器函数标记
+	frontPath    string        // 前端 path(前端菜单路由)
+	isStatic     bool          // 是否静态文件
+	desc         string        // 描述
+	middleware   []interface{} // 中间件
+	groupMiddle  interface{}   // 组中间件
 }
 
 func (this *Route) Prefix() string {
@@ -125,10 +125,10 @@ func Desc(value string) *RouteAttribute {
 	return NewRouteAttribute(ROUTE_DESC, value)
 }
 
-func Middleware(value string) *RouteAttribute {
+func Middleware(value interface{}) *RouteAttribute {
 	return NewRouteAttribute(ROUTE_MIDDLEWARE, value)
 }
 
-func GroupMiddle(value string) *RouteAttribute {
+func GroupMiddle(value interface{}) *RouteAttribute {
 	return NewRouteAttribute(ROUTE_GROUP_MIDDLE, value)
 }

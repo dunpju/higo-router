@@ -2,7 +2,7 @@ package router
 
 var (
 	currentGroupPrefix     string
-	currentGroupMiddleware interface{}
+	currentGroupMiddleware []interface{}
 )
 
 func AddRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
@@ -54,7 +54,7 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 		} else if attribute.Name == ROUTE_IS_STATIC {
 			route.isStatic = attribute.Value.(bool)
 		} else if attribute.Name == ROUTE_MIDDLEWARE {
-			route.middleware = attribute.Value
+			route.middleware = append(route.middleware, attribute.Value)
 		}
 	}
 	AppendRoutes(route)
@@ -65,7 +65,7 @@ func addGroup(prefix string, callable interface{}, attributes ...*RouteAttribute
 	previousGroupMiddle := currentGroupMiddleware
 
 	currentGroupPrefix = previousGroupPrefix + prefix
-	currentGroupMiddleware = RouteAttributes(attributes).Find(ROUTE_GROUP_MIDDLE)
+	currentGroupMiddleware = append(currentGroupMiddleware, RouteAttributes(attributes).Find(ROUTE_GROUP_MIDDLE))
 
 	if fun, ok := callable.(func()); ok {
 		fun() // 执行
