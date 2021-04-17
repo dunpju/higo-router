@@ -10,7 +10,7 @@ func Test()  {
 }
 
 func main()  {
-	/**
+
 	router.AddGroup("/t1", func() {
 		router.AddRoute("GET","/t1-r1", "t1-r1-hand")
 		router.AddGroup("/t2", func() {
@@ -31,26 +31,33 @@ func main()  {
 				router.AddRoute("GET","/y3-r1", "y3-r1-hand")
 				router.AddRoute("GET","/y3-r2", "y3-r2-hand")
 				router.Get("/get_test", "get_test")
+				//router.Get("/get_test", "get_test") // 测试 panic: route GET:/y1/y2/y3/get_test already exist
 				router.Post("/post_test", "post_test")
 				router.Put("/put_test", "put_test")
 				router.Delete("/delete_test", "delete_test")
 				router.Patch("/patch_test", "patch_test")
 				router.Head("/head_test", "head_test")
 			})
-			router.AddRoute("GET","/y2-r2", "y2-r2-hand")
+			router.AddRoute("GET","/get_test", "y2-r2-hand")
 		})
 		router.AddRoute("GET","/y1-r2", "y1-r2-hand")
 	})
 
 	router.AddRoute("GET","/x1-r1", "x1-r1-hand")
 
-	fmt.Println(len(router.GetRoutes()))
-	router.Clear()
-	fmt.Println(len(router.GetRoutes()))
-	router.AddRoute("GET","/t1-r1", "t1-r1-hand")
-	fmt.Println(len(router.GetRoutes()))
+	fmt.Println(len(*router.GetRoutes()))
+	router.GetRoutes().ForEach(func(index int, route *router.Route) {
+		fmt.Println(route)
+	})
 
-	 */
+	//router.Clear()
+
+	/**
+	fmt.Println(len(*router.GetRoutes()))
+	router.AddRoute("GET","/t1-r1", "t1-r1-hand")
+	fmt.Println(len(*router.GetRoutes()))
+
+
 	router.AddRoute("GET","/t1-r1", "t1-r1-hand")
 	router.AddRoute("GET","/test1", Test, router.Flag("test"))
 	router.AddRoute("GET","/test", Test, router.Flag("test"))
@@ -58,4 +65,6 @@ func main()  {
 	router.GetRoutes().ForEach(func(index int, route *router.Route) {
 		fmt.Println(route)
 	})
+
+	 */
 }

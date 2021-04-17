@@ -63,6 +63,7 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 			route.middleware = append(route.middleware, attribute.Value)
 		}
 	}
+
 	if "" == route.flag {
 		if handle, ok := route.handle.(string); ok {
 			route.flag = handle
@@ -74,6 +75,9 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 			route.flag = runtime.FuncForPC(reflect.ValueOf(route.handle).Pointer()).Name()
 		}
 	}
+
+	route.fullPath = route.groupPrefix + route.relativePath
+
 	AppendRoutes(route)
 }
 

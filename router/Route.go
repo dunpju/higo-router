@@ -22,6 +22,7 @@ const (
 	POST                = "POST"
 	PUT                 = "PUT"
 	DELETE              = "DELETE"
+	OPTIONS             = "OPTIONS"
 	PATCH               = "PATCH"
 	HEAD                = "HEAD"
 )
@@ -43,6 +44,7 @@ func init() {
 			Append(PUT).
 			Append(DELETE).
 			Append(PATCH).
+			Append(OPTIONS).
 			Append(HEAD)
 	})
 }
@@ -82,7 +84,8 @@ func (this *UniqueString) ForEach(callable UniqueStringCallable) {
 type Route struct {
 	groupPrefix  string        // 组前缀
 	method       string        // 请求方法 GET/POST/DELETE/PATCH/OPTIONS/HEAD
-	relativePath string        // 后端 api relativePath
+	relativePath string        // 后端url
+	fullPath     string        // 完整url (组前缀 + 后端url)
 	handle       interface{}   // 后端控制器函数
 	flag         string        // 后端控制器函数标记
 	frontPath    string        // 前端 path(前端菜单路由)
@@ -149,10 +152,10 @@ func AppendRoutes(route *Route) {
 	}
 
 	m5 := md5.New()
-	m5.Write([]byte(method + ":" + route.relativePath))
+	m5.Write([]byte(method + ":" + route.fullPath))
 	key := hex.EncodeToString(m5.Sum(nil))
 	if unique.Exist(key) {
-		panic("route " + route.method + ":" + route.relativePath + " already exist")
+		panic("route " + route.method + ":" + route.fullPath + " already exist")
 	}
 	unique.Append(key)
 	routes = append(routes, route)
