@@ -36,8 +36,8 @@ var (
 func init() {
 	once.Do(func() {
 		routes = make(Routes, 0)
-		unique = &UniqueString{make([]string, 0), make(map[string]bool)}
-		onlySupportMethods = &UniqueString{make([]string, 0), make(map[string]bool)}
+		unique = NewUniqueString()
+		onlySupportMethods = NewUniqueString()
 		onlySupportMethods.Append(GET).
 			Append(POST).
 			Append(PUT).
@@ -50,6 +50,10 @@ func init() {
 type UniqueString struct {
 	uniSlice []string
 	uniMap   map[string]bool
+}
+
+func NewUniqueString() *UniqueString {
+	return &UniqueString{make([]string, 0), make(map[string]bool)}
 }
 
 func (this *UniqueString) Append(key string) *UniqueString {
@@ -132,8 +136,8 @@ type Routes []*Route
 
 type RouteCallable func(index int, value Route)
 
-func (this Routes) ForEach(callable RouteCallable) {
-	for key, value := range this {
+func (this *Routes) ForEach(callable RouteCallable) {
+	for key, value := range *this {
 		callable(key, *value)
 	}
 }
@@ -155,8 +159,8 @@ func AppendRoutes(route *Route) {
 }
 
 // 获取路由集
-func GetRoutes() Routes {
-	return routes
+func GetRoutes() *Routes {
+	return &routes
 }
 
 func Clear() {
