@@ -43,9 +43,12 @@ func main() {
 		router.AddRoute("GET", "/y1-r2", "y1-r2-hand")
 	})
 
+
 	// 增加 serve
 	router.AddServe("https").
-		AddRoute("GET", "/x1-r1", "x1-r1-hand", router.SetServe("https"))
+		AddRoute("GET", "/x1-r1", "x1-r1-hand1", router.Flag("fff"))
+	router.AddServe("http").
+		AddRoute("GET", "/x1-r11", "x1-r1-hand2")
 
 	fmt.Println(len(router.GetRoutes(router.DefaultServe).List()))
 	router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {

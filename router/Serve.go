@@ -7,9 +7,9 @@ type Serve struct {
 }
 
 func NewServe(name string) *Serve {
-	ser := &Serve{sort: make([]string, 0), list: make(map[string]*Routes)}
-	ser.Append(name, NewRoutes())
-	return ser
+	serve := &Serve{sort: make([]string, 0), list: make(map[string]*Routes)}
+	serve.Append(NewRoutes(name))
+	return serve
 }
 
 // 添加 serve
@@ -17,8 +17,8 @@ func AddServe(name string) *Routes {
 	if routes, ok := serve.list[name]; ok {
 		return routes
 	}
-	routes := NewRoutes()
-	serve.Append(name, routes)
+	routes := NewRoutes(name)
+	serve.Append(routes)
 	return routes
 }
 
@@ -31,9 +31,9 @@ func (this *Serve) List() map[string]*Routes {
 }
 
 // 追加 serve
-func (this *Serve) Append(name string, routes *Routes) *Serve {
-	this.sort = append(this.sort, name)
-	this.list[name] = routes
+func (this *Serve) Append(routes *Routes) *Serve {
+	this.sort = append(this.sort, routes.serve)
+	this.list[routes.serve] = routes
 	return this
 }
 

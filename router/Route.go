@@ -6,8 +6,9 @@ import (
 )
 
 type Route struct {
-	groupPrefix  string        // 组前缀
+	serve        string        // 服务
 	method       string        // 请求方法 GET/POST/DELETE/PATCH/OPTIONS/HEAD
+	groupPrefix  string        // 组前缀
 	relativePath string        // 后端url
 	fullPath     string        // 完整url (组前缀 + 后端url)
 	handle       interface{}   // 后端控制器函数
@@ -17,7 +18,6 @@ type Route struct {
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
 	groupMiddle  interface{}   // 组中间件
-	serve        string        // 服务
 	unique       string        // 唯一标识 md5(method + ":" fullPath)
 }
 

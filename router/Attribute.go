@@ -11,6 +11,11 @@ func (this RouteAttributes) Find(name string) interface{} {
 	return nil
 }
 
+func (this RouteAttributes) Append(attribute *RouteAttribute) RouteAttributes {
+	this = append(this, attribute)
+	return this
+}
+
 type RouteAttribute struct {
 	Name  string
 	Value interface{}

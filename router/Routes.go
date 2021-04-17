@@ -7,12 +7,13 @@ import (
 type RoutesCallable func(index int, route *Route)
 
 type Routes struct {
+	serve  string
 	unique *UniqueString
 	list   []*Route
 }
 
-func NewRoutes() *Routes {
-	return &Routes{unique: NewUniqueString(), list: make([]*Route, 0)}
+func NewRoutes(name string) *Routes {
+	return &Routes{serve: name, unique: NewUniqueString(), list: make([]*Route, 0)}
 }
 
 func (this *Routes) ForEach(callable RoutesCallable) {
@@ -46,6 +47,10 @@ func CollectRoute(route *Route) {
 	serve.AddRoute(route.serve, route)
 }
 
+func (this *Routes) Serve() string {
+	return this.serve
+}
+
 func (this *Routes) Unique() *UniqueString {
 	return this.unique
 }
@@ -60,41 +65,47 @@ func GetRoutes(name string) *Routes {
 }
 
 func (this *Routes) AddRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
+	if nil == RouteAttributes(attributes).Find(ROUTE_SERVE) {
+		attributes = RouteAttributes(attributes).Append(SetServe(this.serve))
+	}
 	addRoute(httpMethod, relativePath, handler, attributes...)
 	return this
 }
 
 func (this *Routes) AddGroup(prefix string, callable interface{}, attributes ...*RouteAttribute) *Routes {
+	if nil == RouteAttributes(attributes).Find(ROUTE_SERVE) {
+		attributes = RouteAttributes(attributes).Append(SetServe(this.serve))
+	}
 	addGroup(prefix, callable, attributes...)
 	return this
 }
 
 func (this *Routes) Get(relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
-	addRoute(GET, relativePath, handler, attributes...)
+	this.AddRoute(GET, relativePath, handler, attributes...)
 	return this
 }
 
 func (this *Routes) Post(relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
-	addRoute(POST, relativePath, handler, attributes...)
+	this.AddRoute(POST, relativePath, handler, attributes...)
 	return this
 }
 
 func (this *Routes) Put(relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
-	addRoute(PUT, relativePath, handler, attributes...)
+	this.AddRoute(PUT, relativePath, handler, attributes...)
 	return this
 }
 
 func (this *Routes) Delete(relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
-	addRoute(DELETE, relativePath, handler, attributes...)
+	this.AddRoute(DELETE, relativePath, handler, attributes...)
 	return this
 }
 
 func (this *Routes) Patch(relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
-	addRoute(PATCH, relativePath, handler, attributes...)
+	this.AddRoute(PATCH, relativePath, handler, attributes...)
 	return this
 }
 
 func (this *Routes) Head(relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
-	addRoute(HEAD, relativePath, handler, attributes...)
+	this.AddRoute(HEAD, relativePath, handler, attributes...)
 	return this
 }
