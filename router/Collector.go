@@ -44,7 +44,7 @@ func Head(relativePath string, handler interface{}, attributes ...*RouteAttribut
 }
 
 func addRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	route := &Route{}
+	route := NewRoute()
 	route.groupPrefix = currentGroupPrefix
 	route.groupMiddle = currentGroupMiddleware
 	route.method = strings.ToUpper(httpMethod)
@@ -61,6 +61,8 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 			route.isStatic = attribute.Value.(bool)
 		} else if attribute.Name == ROUTE_MIDDLEWARE {
 			route.middleware = append(route.middleware, attribute.Value)
+		} else if attribute.Name == ROUTE_SERVE {
+			route.serve = attribute.Value.(string)
 		}
 	}
 
@@ -76,9 +78,13 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 		}
 	}
 
+	if "" == route.serve {
+		route.serve = DefaultServe
+	}
+
 	route.fullPath = route.groupPrefix + route.relativePath
 
-	AppendRoutes(route)
+	CollectRoute(route)
 }
 
 func addGroup(prefix string, callable interface{}, attributes ...*RouteAttribute) {

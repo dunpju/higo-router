@@ -43,14 +43,18 @@ func main()  {
 		router.AddRoute("GET","/y1-r2", "y1-r2-hand")
 	})
 
-	router.AddRoute("GET","/x1-r1", "x1-r1-hand")
+	// 增加 serve
+	router.AddServe("https")
+	router.AddRoute("GET","/x1-r1", "x1-r1-hand", router.SetServe("https"))
 
-	fmt.Println(len(*router.GetRoutes()))
-	router.GetRoutes().ForEach(func(index int, route *router.Route) {
+	fmt.Println(len(router.GetRoutes(router.DefaultServe).List()))
+	router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {
 		fmt.Println(route)
 	})
-
-	//router.Clear()
+	fmt.Println(router.GetServes())
+	router.GetRoutes("https").ForEach(func(index int, route *router.Route) {
+		fmt.Println(route)
+	})
 
 	/**
 	fmt.Println(len(*router.GetRoutes()))

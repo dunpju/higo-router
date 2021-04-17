@@ -3,83 +3,7 @@ package router
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"strings"
-	"sync"
 )
-
-const (
-	ROUTE_PREFIX        = "prefix"
-	ROUTE_METHOD        = "method"
-	ROUTE_RELATIVE_PATH = "relativePath"
-	ROUTE_HANDLE        = "handle"
-	ROUTE_FLAG          = "flag"
-	ROUTE_FRONTPATH     = "frontPath"
-	ROUTE_IS_STATIC     = "isStatic"
-	ROUTE_DESC          = "desc"
-	ROUTE_MIDDLEWARE    = "middleware"
-	ROUTE_GROUP_MIDDLE  = "groupMiddle"
-	GET                 = "GET"
-	POST                = "POST"
-	PUT                 = "PUT"
-	DELETE              = "DELETE"
-	OPTIONS             = "OPTIONS"
-	PATCH               = "PATCH"
-	HEAD                = "HEAD"
-)
-
-var (
-	routes             Routes
-	unique             *UniqueString
-	onlySupportMethods *UniqueString
-	once               sync.Once
-)
-
-func init() {
-	once.Do(func() {
-		routes = make(Routes, 0)
-		unique = NewUniqueString()
-		onlySupportMethods = NewUniqueString()
-		onlySupportMethods.Append(GET).
-			Append(POST).
-			Append(PUT).
-			Append(DELETE).
-			Append(PATCH).
-			Append(OPTIONS).
-			Append(HEAD)
-	})
-}
-
-type UniqueString struct {
-	uniSlice []string
-	uniMap   map[string]bool
-}
-
-func NewUniqueString() *UniqueString {
-	return &UniqueString{make([]string, 0), make(map[string]bool)}
-}
-
-func (this *UniqueString) Append(key string) *UniqueString {
-	this.uniSlice = append(this.uniSlice, key)
-	this.uniMap[key] = true
-	return this
-}
-
-func (this *UniqueString) Exist(key string) bool {
-	_, ok := this.uniMap[key]
-	return ok
-}
-
-func (this *UniqueString) String() string {
-	return strings.Join(this.uniSlice, "/")
-}
-
-type UniqueStringCallable func(index string, value interface{})
-
-func (this *UniqueString) ForEach(callable UniqueStringCallable) {
-	for _, value := range this.uniSlice {
-		callable(value, this.uniMap[value])
-	}
-}
 
 type Route struct {
 	groupPrefix  string        // 组前缀
@@ -93,6 +17,12 @@ type Route struct {
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
 	groupMiddle  interface{}   // 组中间件
+	serve        string        // 服务
+	unique       string        // 唯一标识 md5(method + ":" fullPath)
+}
+
+func NewRoute() *Route {
+	return &Route{}
 }
 
 func (this *Route) Prefix() string {
@@ -135,81 +65,17 @@ func (this *Route) GroupMiddle() interface{} {
 	return this.groupMiddle
 }
 
-type Routes []*Route
-
-type RoutesCallable func(index int, route *Route)
-
-func (this *Routes) ForEach(callable RoutesCallable) {
-	for key, value := range *this {
-		callable(key, value)
-	}
+func (this *Route) Serve() string {
+	return this.serve
 }
 
-func AppendRoutes(route *Route) {
-	method := strings.ToUpper(route.method)
-	if ! onlySupportMethods.Exist(method) {
-		panic("route " + route.method + " error, only support:" + onlySupportMethods.String())
-	}
-
+func (this *Route) UniMd5() *Route {
 	m5 := md5.New()
-	m5.Write([]byte(method + ":" + route.fullPath))
-	key := hex.EncodeToString(m5.Sum(nil))
-	if unique.Exist(key) {
-		panic("route " + route.method + ":" + route.fullPath + " already exist")
-	}
-	unique.Append(key)
-	routes = append(routes, route)
+	m5.Write([]byte(this.method + ":" + this.fullPath))
+	this.unique = hex.EncodeToString(m5.Sum(nil))
+	return this
 }
 
-// 获取路由集
-func GetRoutes() *Routes {
-	return &routes
-}
-
-func Clear() {
-	routes = nil
-}
-
-type RouteAttributes []*RouteAttribute
-
-func (this RouteAttributes) Find(name string) interface{} {
-	for _, p := range this {
-		if p.Name == name {
-			return p.Value
-		}
-	}
-	return nil
-}
-
-type RouteAttribute struct {
-	Name  string
-	Value interface{}
-}
-
-func NewRouteAttribute(name string, value interface{}) *RouteAttribute {
-	return &RouteAttribute{Name: name, Value: value}
-}
-
-func Flag(value string) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_FLAG, value)
-}
-
-func FrontPath(value string) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_FRONTPATH, value)
-}
-
-func IsStatic(value bool) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_IS_STATIC, value)
-}
-
-func Desc(value string) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_DESC, value)
-}
-
-func Middleware(value interface{}) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_MIDDLEWARE, value)
-}
-
-func GroupMiddle(value interface{}) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_GROUP_MIDDLE, value)
+func (this *Route) Unique() string {
+	return this.unique
 }
