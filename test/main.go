@@ -53,6 +53,7 @@ func main()  {
 	 */
 	router.AddRoute("GET","/t1-r1", "t1-r1-hand")
 	router.AddRoute("GET","/test", Test, router.Flag("test"))
+	router.AddRoute("GET","/test", Test, router.Flag("test"))
 	fmt.Println(router.GetRoutes())
 	router.GetRoutes().ForEach(func(index int, value router.Route) {
 		fmt.Println(index, value)

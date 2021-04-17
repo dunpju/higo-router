@@ -1,6 +1,11 @@
 package router
 
-import "sync"
+import (
+	"crypto/md5"
+	"encoding/hex"
+	"strings"
+	"sync"
+)
 
 const (
 	ROUTE_PREFIX        = "prefix"
@@ -13,7 +18,62 @@ const (
 	ROUTE_DESC          = "desc"
 	ROUTE_MIDDLEWARE    = "middleware"
 	ROUTE_GROUP_MIDDLE  = "groupMiddle"
+	GET                 = "GET"
+	POST                = "POST"
+	PUT                 = "PUT"
+	DELETE              = "DELETE"
+	PATCH               = "PATCH"
+	HEAD                = "HEAD"
 )
+
+var (
+	routes             Routes
+	unique             *UniqueString
+	onlySupportMethods *UniqueString
+	once               sync.Once
+)
+
+func init() {
+	once.Do(func() {
+		routes = make(Routes, 0)
+		unique = &UniqueString{make([]string, 0), make(map[string]bool)}
+		onlySupportMethods = &UniqueString{make([]string, 0), make(map[string]bool)}
+		onlySupportMethods.Append(GET).
+			Append(POST).
+			Append(PUT).
+			Append(DELETE).
+			Append(PATCH).
+			Append(HEAD)
+	})
+}
+
+type UniqueString struct {
+	uniSlice []string
+	uniMap   map[string]bool
+}
+
+func (this *UniqueString) Append(key string) *UniqueString {
+	this.uniSlice = append(this.uniSlice, key)
+	this.uniMap[key] = true
+	return this
+}
+
+func (this *UniqueString) Exist(key string) bool {
+	_, ok := this.uniMap[key]
+	return ok
+}
+
+func (this *UniqueString) String() string {
+	return strings.Join(this.uniSlice, "/")
+}
+
+type UniqueStringCallable func(index string, value interface{})
+
+func (this *UniqueString) ForEach(callable UniqueStringCallable) {
+	for _, value := range this.uniSlice {
+		callable(value, this.uniMap[value])
+	}
+}
 
 type Route struct {
 	groupPrefix  string        // 组前缀
@@ -70,21 +130,27 @@ func (this *Route) GroupMiddle() interface{} {
 
 type Routes []*Route
 
-type Callable func(index int, value Route)
+type RouteCallable func(index int, value Route)
 
-func (this Routes) ForEach(callable Callable) {
+func (this Routes) ForEach(callable RouteCallable) {
 	for key, value := range this {
 		callable(key, *value)
 	}
 }
 
-var routes Routes
-var routesOnce sync.Once
-
 func AppendRoutes(route *Route) {
-	routesOnce.Do(func() {
-		routes = make(Routes, 0)
-	})
+	method := strings.ToUpper(route.method)
+	if ! onlySupportMethods.Exist(method) {
+		panic("route " + route.method + " error, only support:" + onlySupportMethods.String())
+	}
+
+	m5 := md5.New()
+	m5.Write([]byte(method + ":" + route.relativePath))
+	key := hex.EncodeToString(m5.Sum(nil))
+	if unique.Exist(key) {
+		panic("route " + route.method + ":" + route.relativePath + " already exist")
+	}
+	unique.Append(key)
 	routes = append(routes, route)
 }
 

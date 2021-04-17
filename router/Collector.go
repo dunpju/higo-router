@@ -3,6 +3,7 @@ package router
 import (
 	"reflect"
 	"runtime"
+	"strings"
 )
 
 var (
@@ -19,34 +20,34 @@ func AddGroup(prefix string, callable interface{}, attributes ...*RouteAttribute
 }
 
 func Get(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	addRoute("GET", relativePath, handler, attributes...)
+	addRoute(GET, relativePath, handler, attributes...)
 }
 
 func Post(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	addRoute("POST", relativePath, handler, attributes...)
+	addRoute(POST, relativePath, handler, attributes...)
 }
 
 func Put(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	addRoute("PUT", relativePath, handler, attributes...)
+	addRoute(PUT, relativePath, handler, attributes...)
 }
 
 func Delete(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	addRoute("DELETE", relativePath, handler, attributes...)
+	addRoute(DELETE, relativePath, handler, attributes...)
 }
 
 func Patch(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	addRoute("PATCH", relativePath, handler, attributes...)
+	addRoute(PATCH, relativePath, handler, attributes...)
 }
 
 func Head(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	addRoute("HEAD", relativePath, handler, attributes...)
+	addRoute(HEAD, relativePath, handler, attributes...)
 }
 
 func addRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
 	route := &Route{}
 	route.groupPrefix = currentGroupPrefix
 	route.groupMiddle = currentGroupMiddleware
-	route.method = httpMethod
+	route.method = strings.ToUpper(httpMethod)
 	route.relativePath = relativePath
 	route.handle = handler
 	for _, attribute := range attributes {
