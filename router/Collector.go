@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	currentServe           string
 	currentGroupPrefix     string
 	currentGroupMiddleware []interface{}
 )
@@ -45,11 +46,12 @@ func Head(relativePath string, handler interface{}, attributes ...*RouteAttribut
 
 func addRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
 	route := NewRoute()
-	route.groupPrefix = currentGroupPrefix
-	route.groupMiddle = currentGroupMiddleware
+	route.serve = currentServe
 	route.method = strings.ToUpper(httpMethod)
+	route.groupPrefix = currentGroupPrefix
 	route.relativePath = relativePath
 	route.handle = handler
+	route.groupMiddle = currentGroupMiddleware
 	for _, attribute := range attributes {
 		if attribute.Name == ROUTE_FLAG {
 			route.flag = attribute.Value.(string)

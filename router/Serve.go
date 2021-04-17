@@ -14,6 +14,7 @@ func NewServe(name string) *Serve {
 
 // 添加 serve
 func AddServe(name string) *Routes {
+	currentServe = name
 	if routes, ok := serve.list[name]; ok {
 		return routes
 	}
