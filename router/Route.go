@@ -134,7 +134,7 @@ func (this *Route) GroupMiddle() interface{} {
 
 type Routes []*Route
 
-type RoutesCallable func(index int, value *Route)
+type RoutesCallable func(index int, route *Route)
 
 func (this *Routes) ForEach(callable RoutesCallable) {
 	for key, value := range *this {
