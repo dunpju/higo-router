@@ -5,31 +5,31 @@ import (
 	"github.com/dengpju/higo-router/router"
 )
 
-func Test()  {
+func Test() {
 
 }
 
-func main()  {
+func main() {
 
 	router.AddGroup("/t1", func() {
-		router.AddRoute("GET","/t1-r1", "t1-r1-hand")
+		router.AddRoute("GET", "/t1-r1", "t1-r1-hand")
 		router.AddGroup("/t2", func() {
-			router.AddRoute("GET","/t2-r1", "tt2-r1-hand")
+			router.AddRoute("GET", "/t2-r1", "tt2-r1-hand")
 			router.AddGroup("/t3", func() {
-				router.AddRoute("GET","/t3-r1", "t3-r1-hand")
+				router.AddRoute("GET", "/t3-r1", "t3-r1-hand")
 			})
-			router.AddRoute("GET","/t2-r2", "t2-r2-hand")
+			router.AddRoute("GET", "/t2-r2", "t2-r2-hand")
 		})
-		router.AddRoute("GET","/t1-r2", "t1-r2-hand")
+		router.AddRoute("GET", "/t1-r2", "t1-r2-hand")
 	})
 
 	router.AddGroup("/y1", func() {
-		router.AddRoute("GET","/y1-r1", "y1-r1-hand")
+		router.AddRoute("GET", "/y1-r1", "y1-r1-hand")
 		router.AddGroup("/y2", func() {
-			router.AddRoute("GET","/y2-r1", "y2-r1-hand")
+			router.AddRoute("GET", "/y2-r1", "y2-r1-hand")
 			router.AddGroup("/y3", func() {
-				router.AddRoute("GET","/y3-r1", "y3-r1-hand")
-				router.AddRoute("GET","/y3-r2", "y3-r2-hand")
+				router.AddRoute("GET", "/y3-r1", "y3-r1-hand")
+				router.AddRoute("GET", "/y3-r2", "y3-r2-hand")
 				router.Get("/get_test", "get_test")
 				//router.Get("/get_test", "get_test") // 测试 panic: route GET:/y1/y2/y3/get_test already exist
 				router.Post("/post_test", "post_test")
@@ -38,14 +38,14 @@ func main()  {
 				router.Patch("/patch_test", "patch_test")
 				router.Head("/head_test", "head_test")
 			})
-			router.AddRoute("GET","/get_test", "y2-r2-hand")
+			router.AddRoute("GET", "/get_test", "y2-r2-hand")
 		})
-		router.AddRoute("GET","/y1-r2", "y1-r2-hand")
+		router.AddRoute("GET", "/y1-r2", "y1-r2-hand")
 	})
 
 	// 增加 serve
 	router.AddServe("https")
-	router.AddRoute("GET","/x1-r1", "x1-r1-hand", router.SetServe("https"))
+	router.AddRoute("GET", "/x1-r1", "x1-r1-hand", router.SetServe("https"))
 
 	fmt.Println(len(router.GetRoutes(router.DefaultServe).List()))
 	router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {
@@ -70,5 +70,5 @@ func main()  {
 		fmt.Println(route)
 	})
 
-	 */
+	*/
 }
