@@ -1,5 +1,10 @@
 package router
 
+import (
+	"reflect"
+	"runtime"
+)
+
 var (
 	currentGroupPrefix     string
 	currentGroupMiddleware []interface{}
@@ -55,6 +60,17 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 			route.isStatic = attribute.Value.(bool)
 		} else if attribute.Name == ROUTE_MIDDLEWARE {
 			route.middleware = append(route.middleware, attribute.Value)
+		}
+	}
+	if "" == route.flag {
+		if handle, ok := route.handle.(string); ok {
+			route.flag = handle
+		} else if _, ok := route.handle.(int); ok {
+			panic("handle Can't be int")
+		} else if _, ok := route.handle.(int64); ok {
+			panic("handle Can't be int64")
+		} else {
+			route.flag = runtime.FuncForPC(reflect.ValueOf(route.handle).Pointer()).Name()
 		}
 	}
 	AppendRoutes(route)

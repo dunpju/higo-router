@@ -70,6 +70,14 @@ func (this *Route) GroupMiddle() interface{} {
 
 type Routes []*Route
 
+type Callable func(index int, value Route)
+
+func (this Routes) ForEach(callable Callable) {
+	for key, value := range this {
+		callable(key, *value)
+	}
+}
+
 var routes Routes
 var routesOnce sync.Once
 

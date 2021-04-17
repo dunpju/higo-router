@@ -5,7 +5,12 @@ import (
 	"github.com/dengpju/higo-router/router"
 )
 
+func Test()  {
+
+}
+
 func main()  {
+	/**
 	router.AddGroup("/t1", func() {
 		router.AddRoute("GET","/t1-r1", "t1-r1-hand")
 		router.AddGroup("/t2", func() {
@@ -44,4 +49,12 @@ func main()  {
 	fmt.Println(len(router.GetRoutes()))
 	router.AddRoute("GET","/t1-r1", "t1-r1-hand")
 	fmt.Println(len(router.GetRoutes()))
+
+	 */
+	router.AddRoute("GET","/t1-r1", "t1-r1-hand")
+	router.AddRoute("GET","/test", Test, router.Flag("test"))
+	fmt.Println(router.GetRoutes())
+	router.GetRoutes().ForEach(func(index int, value router.Route) {
+		fmt.Println(index, value)
+	})
 }
