@@ -13,8 +13,13 @@ func NewServe(name string) *Serve {
 }
 
 // 添加 serve
-func AddServe(name string)  {
-	serve.Append(name, NewRoutes())
+func AddServe(name string) *Routes {
+	if routes, ok := serve.list[name]; ok {
+		return routes
+	}
+	routes := NewRoutes()
+	serve.Append(name, routes)
+	return routes
 }
 
 func (this *Serve) Sort() []string {
