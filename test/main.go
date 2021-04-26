@@ -61,6 +61,7 @@ func main() {
 	router.GetRoutes("https").ForEach(func(index int, route *router.Route) {
 		fmt.Println(route)
 	})
+	fmt.Println(router.GetRoutes("http").Route("GET", "/y1/y2/y3/get_test"))
 
 	/**
 	fmt.Println(len(*router.GetRoutes()))

@@ -70,12 +70,16 @@ func (this *Route) Serve() string {
 }
 
 func (this *Route) UniMd5() *Route {
-	m5 := md5.New()
-	m5.Write([]byte(this.method + ":" + this.fullPath))
-	this.unique = hex.EncodeToString(m5.Sum(nil))
+	this.unique = UniMd5(this.method, this.fullPath)
 	return this
 }
 
 func (this *Route) Unique() string {
 	return this.unique
+}
+
+func UniMd5(method, fullPath string) string {
+	m5 := md5.New()
+	m5.Write([]byte(method + ":" + fullPath))
+	return hex.EncodeToString(m5.Sum(nil))
 }

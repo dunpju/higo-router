@@ -7,13 +7,14 @@ import (
 type RoutesCallable func(index int, route *Route)
 
 type Routes struct {
-	serve  string
-	unique *UniqueString
-	list   []*Route
+	serve    string
+	unique   *UniqueString
+	list     []*Route
+	routeMap map[string]*Route
 }
 
 func NewRoutes(name string) *Routes {
-	return &Routes{serve: name, unique: NewUniqueString(), list: make([]*Route, 0)}
+	return &Routes{serve: name, unique: NewUniqueString(), list: make([]*Route, 0), routeMap: make(map[string]*Route)}
 }
 
 func (this *Routes) ForEach(callable RoutesCallable) {
@@ -22,10 +23,19 @@ func (this *Routes) ForEach(callable RoutesCallable) {
 	}
 }
 
+func (this *Routes) Route(method, url string) *Route {
+	if route, ok := this.routeMap[UniMd5(method, url)]; ok {
+		return route
+	} else {
+		panic("route " + method + ":" + url + " non-existent")
+	}
+}
+
 // 追加 route
 func (this *Routes) Append(route *Route) *Routes {
 	this.unique.Append(route.unique)
 	this.list = append(this.list, route)
+	this.routeMap[route.unique] = route
 	return this
 }
 
