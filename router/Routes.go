@@ -74,11 +74,11 @@ func GetRoutes(name string) *Routes {
 	return serve.Routes(name)
 }
 
-func (this *Routes) AddRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
+func (this *Routes) AddRoute(method string, relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
 	if nil == RouteAttributes(attributes).Find(ROUTE_SERVE) {
 		attributes = RouteAttributes(attributes).Append(SetServe(this.serve))
 	}
-	addRoute(httpMethod, relativePath, handler, attributes...)
+	addRoute(method, relativePath, handler, attributes...)
 	return this
 }
 
@@ -87,6 +87,11 @@ func (this *Routes) AddGroup(prefix string, callable interface{}, attributes ...
 		attributes = RouteAttributes(attributes).Append(SetServe(this.serve))
 	}
 	addGroup(prefix, callable, attributes...)
+	return this
+}
+
+func (this *Routes) Ws(relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
+	this.AddRoute(WEBSOCKET, relativePath, handler, attributes...)
 	return this
 }
 

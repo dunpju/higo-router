@@ -21,6 +21,10 @@ func AddGroup(prefix string, callable interface{}, attributes ...*RouteAttribute
 	addGroup(prefix, callable, attributes...)
 }
 
+func Ws(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
+	addRoute(WEBSOCKET, relativePath, handler, attributes...)
+}
+
 func Get(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
 	addRoute(GET, relativePath, handler, attributes...)
 }
@@ -45,10 +49,10 @@ func Head(relativePath string, handler interface{}, attributes ...*RouteAttribut
 	addRoute(HEAD, relativePath, handler, attributes...)
 }
 
-func addRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
+func addRoute(method string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
 	route := NewRoute()
 	route.serve = currentServe
-	route.method = strings.ToUpper(httpMethod)
+	route.method = strings.ToUpper(method)
 	route.groupPrefix = currentGroupPrefix
 	route.relativePath = relativePath
 	route.handle = handler

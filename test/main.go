@@ -51,7 +51,8 @@ func main() {
 		AddRoute("GET", "/x1-r11", "x1-r1-hand2")
 	router.AddRoute("GET", "/gggggggggggggggg", "y2-r2-hand")
 	router.AddServe("https").
-		AddRoute("GET", "/fffffffffff", "x1-r1-hand1")
+		AddRoute("GET", "/fffffffffff", "x1-r1-hand1").
+		Ws("/ffffffffff", "ws")
 
 	fmt.Println(len(router.GetRoutes(router.DefaultServe).List()))
 	router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {

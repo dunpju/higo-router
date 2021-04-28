@@ -23,6 +23,7 @@ const (
 	OPTIONS             = "OPTIONS"
 	PATCH               = "PATCH"
 	HEAD                = "HEAD"
+	WEBSOCKET           = GET
 )
 
 var (
