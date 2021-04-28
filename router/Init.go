@@ -15,6 +15,7 @@ const (
 	ROUTE_MIDDLEWARE    = "middleware"
 	ROUTE_GROUP_MIDDLE  = "groupMiddle"
 	ROUTE_SERVE         = "serve"
+	ROUTE_HEADER        = "header"
 	GET                 = "GET"
 	POST                = "POST"
 	PUT                 = "PUT"

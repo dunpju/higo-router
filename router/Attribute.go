@@ -1,5 +1,7 @@
 package router
 
+import "net/http"
+
 type RouteAttributes []*RouteAttribute
 
 func (this RouteAttributes) Find(name string) interface{} {
@@ -51,4 +53,8 @@ func GroupMiddle(value interface{}) *RouteAttribute {
 
 func SetServe(value interface{}) *RouteAttribute {
 	return NewRouteAttribute(ROUTE_SERVE, value)
+}
+
+func SetHeader(value http.Header) *RouteAttribute {
+	return NewRouteAttribute(ROUTE_HEADER, value)
 }

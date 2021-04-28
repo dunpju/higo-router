@@ -1,6 +1,7 @@
 package router
 
 import (
+	"net/http"
 	"reflect"
 	"runtime"
 	"strings"
@@ -65,6 +66,8 @@ func addRoute(httpMethod string, relativePath string, handler interface{}, attri
 			route.middleware = append(route.middleware, attribute.Value)
 		} else if attribute.Name == ROUTE_SERVE {
 			route.serve = attribute.Value.(string)
+		} else if attribute.Name == ROUTE_HEADER {
+			route.header = attribute.Value.(http.Header)
 		}
 	}
 

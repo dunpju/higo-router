@@ -3,6 +3,7 @@ package router
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"net/http"
 )
 
 type Route struct {
@@ -19,6 +20,7 @@ type Route struct {
 	middleware   []interface{} // 中间件
 	groupMiddle  interface{}   // 组中间件
 	unique       string        // 唯一标识 md5(method + ":" fullPath)
+	header       http.Header
 }
 
 func NewRoute() *Route {
@@ -76,6 +78,15 @@ func (this *Route) UniMd5() *Route {
 
 func (this *Route) Unique() string {
 	return this.unique
+}
+
+func (this *Route) Header() http.Header {
+	return this.header
+}
+
+func (this *Route) SetHeader(header http.Header) *Route {
+	this.header = header
+	return this
 }
 
 func UniMd5(method, fullPath string) string {
