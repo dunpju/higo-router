@@ -39,6 +39,10 @@ func (this *Route) RelativePath() string {
 	return this.relativePath
 }
 
+func (this *Route) FullPath() string {
+	return this.fullPath
+}
+
 func (this *Route) Handle() interface{} {
 	return this.handle
 }
