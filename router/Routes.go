@@ -27,7 +27,7 @@ func (this *Routes) Route(method, url string) *Route {
 	if route, ok := this.routeMap[UniMd5(method, url)]; ok {
 		return route
 	} else {
-		panic("route " + method + ":" + url + " non-existent")
+		panic(route.serve +  "route " + method + ":" + url + " non-existent")
 	}
 }
 
@@ -43,14 +43,14 @@ func (this *Routes) Append(route *Route) *Routes {
 func CollectRoute(route *Route) {
 	route.method = strings.ToUpper(route.method)
 	if ! onlySupportMethods.Exist(route.method) {
-		panic("route " + route.method + " error, only support:" + onlySupportMethods.String())
+		panic(route.serve + " route " + route.method + " error, only support:" + onlySupportMethods.String())
 	}
 
 	// 生成唯一标识
 	route.UniMd5()
 
 	if serve.Routes(route.serve).Unique().Exist(route.unique) {
-		panic("route " + route.method + ":" + route.fullPath + " already exist")
+		panic(route.serve + " route " + route.method + ":" + route.fullPath + " already exist")
 	}
 
 	serve.Routes(route.serve).Unique().Append(route.unique)
