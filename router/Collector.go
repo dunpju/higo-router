@@ -58,19 +58,19 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 	route.handle = handler
 	route.groupMiddle = currentGroupMiddleware
 	for _, attribute := range attributes {
-		if attribute.Name == ROUTE_FLAG {
+		if attribute.Name == RouteFlag {
 			route.flag = attribute.Value.(string)
-		} else if attribute.Name == ROUTE_FRONTPATH {
+		} else if attribute.Name == RouteFrontpath {
 			route.frontPath = attribute.Value.(string)
-		} else if attribute.Name == ROUTE_DESC {
+		} else if attribute.Name == RouteDesc {
 			route.desc = attribute.Value.(string)
-		} else if attribute.Name == ROUTE_IS_STATIC {
+		} else if attribute.Name == RouteIsStatic {
 			route.isStatic = attribute.Value.(bool)
-		} else if attribute.Name == ROUTE_MIDDLEWARE {
+		} else if attribute.Name == RouteMiddleware {
 			route.middleware = append(route.middleware, attribute.Value)
-		} else if attribute.Name == ROUTE_SERVE {
+		} else if attribute.Name == RouteServe {
 			route.serve = attribute.Value.(string)
-		} else if attribute.Name == ROUTE_HEADER {
+		} else if attribute.Name == RouteHeader {
 			route.header = attribute.Value.(http.Header)
 		}
 	}
@@ -91,7 +91,7 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 		route.serve = DefaultServe
 	}
 
-	route.fullPath = route.groupPrefix + route.relativePath
+	route.absolutePath = route.groupPrefix + route.relativePath
 
 	CollectRoute(route)
 }
@@ -101,7 +101,7 @@ func addGroup(prefix string, callable interface{}, attributes ...*RouteAttribute
 	previousGroupMiddle := currentGroupMiddleware
 
 	currentGroupPrefix = previousGroupPrefix + prefix
-	currentGroupMiddleware = append(currentGroupMiddleware, RouteAttributes(attributes).Find(ROUTE_GROUP_MIDDLE))
+	currentGroupMiddleware = append(currentGroupMiddleware, RouteAttributes(attributes).Find(RouteGroupMiddle))
 
 	if fun, ok := callable.(func()); ok {
 		fun() // 执行

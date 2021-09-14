@@ -28,33 +28,33 @@ func NewRouteAttribute(name string, value interface{}) *RouteAttribute {
 }
 
 func Flag(value string) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_FLAG, value)
+	return NewRouteAttribute(RouteFlag, value)
 }
 
 func FrontPath(value string) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_FRONTPATH, value)
+	return NewRouteAttribute(RouteFrontpath, value)
 }
 
 func IsStatic(value bool) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_IS_STATIC, value)
+	return NewRouteAttribute(RouteIsStatic, value)
 }
 
 func Desc(value string) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_DESC, value)
+	return NewRouteAttribute(RouteDesc, value)
 }
 
 func Middleware(value interface{}) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_MIDDLEWARE, value)
+	return NewRouteAttribute(RouteMiddleware, value)
 }
 
 func GroupMiddle(value interface{}) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_GROUP_MIDDLE, value)
+	return NewRouteAttribute(RouteGroupMiddle, value)
 }
 
 func SetServe(value interface{}) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_SERVE, value)
+	return NewRouteAttribute(RouteServe, value)
 }
 
 func SetHeader(value http.Header) *RouteAttribute {
-	return NewRouteAttribute(ROUTE_HEADER, value)
+	return NewRouteAttribute(RouteHeader, value)
 }

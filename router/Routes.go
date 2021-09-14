@@ -8,13 +8,14 @@ type RoutesCallable func(index int, route *Route)
 
 type Routes struct {
 	serve    string
+	unimd5   *UniqueString
 	unique   *UniqueString
 	list     []*Route
 	routeMap map[string]*Route
 }
 
 func NewRoutes(name string) *Routes {
-	return &Routes{serve: name, unique: NewUniqueString(), list: make([]*Route, 0), routeMap: make(map[string]*Route)}
+	return &Routes{serve: name, unimd5: NewUniqueString(), unique: NewUniqueString(), list: make([]*Route, 0), routeMap: make(map[string]*Route)}
 }
 
 func (this *Routes) ForEach(callable RoutesCallable) {
@@ -27,15 +28,16 @@ func (this *Routes) Route(method, url string) *Route {
 	if route, ok := this.routeMap[UniMd5(method, url)]; ok {
 		return route
 	} else {
-		panic(route.serve +  "route " + method + ":" + url + " non-existent")
+		panic(route.serve + "route " + method + ":" + url + " non-existent")
 	}
 }
 
 // 追加 route
 func (this *Routes) Append(route *Route) *Routes {
+	this.unimd5.Append(route.unimd5)
 	this.unique.Append(route.unique)
 	this.list = append(this.list, route)
-	this.routeMap[route.unique] = route
+	this.routeMap[route.unimd5] = route
 	return this
 }
 
@@ -47,13 +49,13 @@ func CollectRoute(route *Route) {
 	}
 
 	// 生成唯一标识
-	route.UniMd5()
+	route.GenUniMd5()
 
-	if serve.Routes(route.serve).Unique().Exist(route.unique) {
-		panic(route.serve + " route " + route.method + ":" + route.fullPath + " already exist")
+	if serve.Routes(route.serve).Unimd5().Exist(route.unimd5) {
+		panic(route.serve + " route " + route.method + ":" + route.absolutePath + " already exist")
 	}
 
-	serve.Routes(route.serve).Unique().Append(route.unique)
+	serve.Routes(route.serve).Unimd5().Append(route.unimd5)
 	serve.AddRoute(route.serve, route)
 }
 
@@ -61,8 +63,8 @@ func (this *Routes) Serve() string {
 	return this.serve
 }
 
-func (this *Routes) Unique() *UniqueString {
-	return this.unique
+func (this *Routes) Unimd5() *UniqueString {
+	return this.unimd5
 }
 
 func (this *Routes) List() []*Route {
@@ -75,7 +77,7 @@ func GetRoutes(name string) *Routes {
 }
 
 func (this *Routes) AddRoute(method string, relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
-	if nil == RouteAttributes(attributes).Find(ROUTE_SERVE) {
+	if nil == RouteAttributes(attributes).Find(RouteServe) {
 		attributes = RouteAttributes(attributes).Append(SetServe(this.serve))
 	}
 	addRoute(method, relativePath, handler, attributes...)
@@ -83,7 +85,7 @@ func (this *Routes) AddRoute(method string, relativePath string, handler interfa
 }
 
 func (this *Routes) AddGroup(prefix string, callable interface{}, attributes ...*RouteAttribute) *Routes {
-	if nil == RouteAttributes(attributes).Find(ROUTE_SERVE) {
+	if nil == RouteAttributes(attributes).Find(RouteServe) {
 		attributes = RouteAttributes(attributes).Append(SetServe(this.serve))
 	}
 	addGroup(prefix, callable, attributes...)

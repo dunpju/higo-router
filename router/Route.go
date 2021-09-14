@@ -10,8 +10,8 @@ type Route struct {
 	serve        string        // 服务
 	method       string        // 请求方法 GET/POST/DELETE/PATCH/OPTIONS/HEAD
 	groupPrefix  string        // 组前缀
-	relativePath string        // 后端url
-	fullPath     string        // 完整url (组前缀 + 后端url)
+	relativePath string        // 相对路径
+	absolutePath string        // 绝对路径
 	handle       interface{}   // 后端控制器函数
 	flag         string        // 后端控制器函数标记
 	frontPath    string        // 前端 path(前端菜单路由)
@@ -19,7 +19,8 @@ type Route struct {
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
 	groupMiddle  interface{}   // 组中间件
-	unique       string        // 唯一标识 md5(method + ":" fullPath)
+	unimd5       string        // 唯一标识 md5(method + "@" absolutePath)
+	unique       string        // 唯一标识 method + "@" absolutePath
 	header       http.Header
 }
 
@@ -39,8 +40,8 @@ func (this *Route) RelativePath() string {
 	return this.relativePath
 }
 
-func (this *Route) FullPath() string {
-	return this.fullPath
+func (this *Route) AbsolutePath() string {
+	return this.absolutePath
 }
 
 func (this *Route) Handle() interface{} {
@@ -75,9 +76,14 @@ func (this *Route) Serve() string {
 	return this.serve
 }
 
-func (this *Route) UniMd5() *Route {
-	this.unique = UniMd5(this.method, this.fullPath)
+func (this *Route) GenUniMd5() *Route {
+	this.unimd5 = UniMd5(this.method, this.absolutePath)
+	this.unique = Unique(this.method, this.absolutePath)
 	return this
+}
+
+func (this *Route) UniMd5() string {
+	return this.unimd5
 }
 
 func (this *Route) Unique() string {
@@ -93,8 +99,12 @@ func (this *Route) SetHeader(header http.Header) *Route {
 	return this
 }
 
-func UniMd5(method, fullPath string) string {
+func UniMd5(method, absolutePath string) string {
 	m5 := md5.New()
-	m5.Write([]byte(method + ":" + fullPath))
+	m5.Write([]byte(Unique(method, absolutePath)))
 	return hex.EncodeToString(m5.Sum(nil))
+}
+
+func Unique(method, absolutePath string) string {
+	return method + "@" + absolutePath
 }
