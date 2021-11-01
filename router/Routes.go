@@ -84,7 +84,7 @@ func (this *Routes) AddRoute(method string, relativePath string, handler interfa
 	return this
 }
 
-func (this *Routes) AddGroup(prefix string, callable interface{}, attributes ...*RouteAttribute) *Routes {
+func (this *Routes) AddGroup(prefix string, callable func(), attributes ...*RouteAttribute) *Routes {
 	if nil == RouteAttributes(attributes).Find(RouteServe) {
 		attributes = RouteAttributes(attributes).Append(SetServe(this.serve))
 	}

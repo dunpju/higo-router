@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	currentServe           string
-	currentGroupPrefix     string
+	currentServe           string //当前服务
+	currentGroupPrefix     string //当前组前缀
+	currentGroupIsAuth     bool   //当前组是否鉴权(默认:false)
 	currentGroupMiddleware []interface{}
 )
 
@@ -17,7 +18,7 @@ func AddRoute(httpMethod string, relativePath string, handler interface{}, attri
 	addRoute(httpMethod, relativePath, handler, attributes...)
 }
 
-func AddGroup(prefix string, callable interface{}, attributes ...*RouteAttribute) {
+func AddGroup(prefix string, callable func(), attributes ...*RouteAttribute) {
 	addGroup(prefix, callable, attributes...)
 }
 
@@ -50,7 +51,7 @@ func Head(relativePath string, handler interface{}, attributes ...*RouteAttribut
 }
 
 func addRoute(method string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	route := NewRoute()
+	route := newRoute()
 	route.serve = currentServe
 	route.method = strings.ToUpper(method)
 	route.groupPrefix = currentGroupPrefix
@@ -66,6 +67,8 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 			route.desc = attribute.Value.(string)
 		} else if attribute.Name == RouteIsStatic {
 			route.isStatic = attribute.Value.(bool)
+		} else if attribute.Name == RouteIsAuth {
+			route.isAuth = attribute.Value.(bool)
 		} else if attribute.Name == RouteMiddleware {
 			route.middleware = append(route.middleware, attribute.Value)
 		} else if attribute.Name == RouteServe {
@@ -96,17 +99,17 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 	CollectRoute(route)
 }
 
-func addGroup(prefix string, callable interface{}, attributes ...*RouteAttribute) {
+func addGroup(prefix string, callable func(), attributes ...*RouteAttribute) {
 	previousGroupPrefix := currentGroupPrefix
+	previousGroupIsAuth := currentGroupIsAuth
 	previousGroupMiddle := currentGroupMiddleware
 
 	currentGroupPrefix = previousGroupPrefix + prefix
 	currentGroupMiddleware = append(currentGroupMiddleware, RouteAttributes(attributes).Find(RouteGroupMiddle))
 
-	if fun, ok := callable.(func()); ok {
-		fun() // 执行
-	}
+	callable() // 执行
 
 	currentGroupPrefix = previousGroupPrefix
+	currentGroupIsAuth = previousGroupIsAuth
 	currentGroupMiddleware = previousGroupMiddle
 }

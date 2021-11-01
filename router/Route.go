@@ -16,6 +16,7 @@ type Route struct {
 	flag         string        // 后端控制器函数标记
 	frontPath    string        // 前端 path(前端菜单路由)
 	isStatic     bool          // 是否静态文件
+	isAuth       bool          // 是否鉴权(默认:true)
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
 	groupMiddle  interface{}   // 组中间件
@@ -24,8 +25,8 @@ type Route struct {
 	header       http.Header
 }
 
-func NewRoute() *Route {
-	return &Route{}
+func newRoute() *Route {
+	return &Route{isAuth: true}
 }
 
 func (this *Route) Prefix() string {
