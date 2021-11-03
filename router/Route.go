@@ -20,8 +20,8 @@ type Route struct {
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
 	groupMiddle  interface{}   // 组中间件
-	unimd5       string        // 唯一标识 md5(method + "@" absolutePath)
-	unique       string        // 唯一标识 method + "@" absolutePath
+	unimd5       string        // 唯一标识 md5(method + "@" + absolutePath)
+	unique       string        // 唯一标识 method + "@" + absolutePath
 	header       http.Header
 }
 

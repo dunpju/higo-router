@@ -55,6 +55,7 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 	route.serve = currentServe
 	route.method = strings.ToUpper(method)
 	route.groupPrefix = currentGroupPrefix
+	route.isAuth = currentGroupIsAuth
 	route.relativePath = relativePath
 	route.handle = handler
 	route.groupMiddle = currentGroupMiddleware
@@ -105,6 +106,9 @@ func addGroup(prefix string, callable func(), attributes ...*RouteAttribute) {
 	previousGroupMiddle := currentGroupMiddleware
 
 	currentGroupPrefix = previousGroupPrefix + prefix
+	if isAuth := RouteAttributes(attributes).Find(RouteIsAuth); isAuth != nil {
+		currentGroupIsAuth = isAuth.(bool)
+	}
 	currentGroupMiddleware = append(currentGroupMiddleware, RouteAttributes(attributes).Find(RouteGroupMiddle))
 
 	callable() // 执行

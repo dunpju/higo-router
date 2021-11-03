@@ -12,14 +12,14 @@ func Test() {
 func main() {
 
 	router.AddGroup("/t1", func() {
-		router.AddRoute("GET", "/t1-r1", "t1-r1-hand")
+		router.AddRoute("GET", "/t1-r1", "t1-r1-hand", router.IsAuth(false))
 		router.AddGroup("/t2", func() {
 			router.AddRoute("GET", "/t2-r1", "tt2-r1-hand")
 			router.AddGroup("/t3", func() {
 				router.AddRoute("GET", "/t3-r1", "t3-r1-hand")
-			})
+			}, router.IsAuth(false))
 			router.AddRoute("GET", "/t2-r2", "t2-r2-hand")
-		})
+		}, router.IsAuth(true))
 		router.AddRoute("GET", "/t1-r2", "t1-r2-hand")
 	})
 
@@ -42,7 +42,6 @@ func main() {
 		})
 		router.AddRoute("GET", "/y1-r2", "y1-r2-hand")
 	})
-
 
 	// 增加 serve
 	router.AddServe("https").
