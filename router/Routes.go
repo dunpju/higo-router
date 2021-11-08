@@ -2,6 +2,7 @@ package router
 
 import (
 	"strings"
+	"sync"
 )
 
 type RoutesCallable func(index int, route *Route)
@@ -12,10 +13,12 @@ type Routes struct {
 	unique   *UniqueString
 	list     []*Route
 	routeMap map[string]*Route
+	lock     *sync.Mutex
 }
 
 func NewRoutes(name string) *Routes {
-	return &Routes{serve: name, unimd5: NewUniqueString(), unique: NewUniqueString(), list: make([]*Route, 0), routeMap: make(map[string]*Route)}
+	return &Routes{serve: name, unimd5: NewUniqueString(), unique: NewUniqueString(),
+		list: make([]*Route, 0), routeMap: make(map[string]*Route), lock: new(sync.Mutex)}
 }
 
 func (this *Routes) ForEach(callable RoutesCallable) {
@@ -25,6 +28,8 @@ func (this *Routes) ForEach(callable RoutesCallable) {
 }
 
 func (this *Routes) Route(method, url string) *Route {
+	this.lock.Lock()
+	defer this.lock.Unlock()
 	if route, ok := this.routeMap[UniMd5(method, url)]; ok {
 		return route
 	} else {
@@ -34,6 +39,8 @@ func (this *Routes) Route(method, url string) *Route {
 
 // 追加 route
 func (this *Routes) Append(route *Route) *Routes {
+	this.lock.Lock()
+	defer this.lock.Unlock()
 	this.unimd5.Append(route.unimd5)
 	this.unique.Append(route.unique)
 	this.list = append(this.list, route)
@@ -77,6 +84,8 @@ func GetRoutes(name string) *Routes {
 }
 
 func (this *Routes) AddRoute(method string, relativePath string, handler interface{}, attributes ...*RouteAttribute) *Routes {
+	this.lock.Lock()
+	defer this.lock.Unlock()
 	if nil == RouteAttributes(attributes).Find(RouteServe) {
 		attributes = RouteAttributes(attributes).Append(SetServe(this.serve))
 	}
