@@ -57,7 +57,7 @@ func main() {
 		})
 		router.AddRoute("GET", "/y1-r2", "y1-r2-hand")
 	})
-
+	router.AddRoute("GET", "/y1-r3", "y1-r3-hand")
 	fmt.Println(router.GetServes())
 	router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {
 		fmt.Println(route)

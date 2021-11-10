@@ -26,7 +26,7 @@ type Route struct {
 }
 
 func newRoute() *Route {
-	return &Route{isAuth: true}
+	return &Route{}
 }
 
 func (this *Route) Prefix() string {
@@ -59,6 +59,10 @@ func (this *Route) FrontPath() string {
 
 func (this *Route) IsStatic() bool {
 	return this.isStatic
+}
+
+func (this *Route) IsAuth() bool {
+	return this.isAuth
 }
 
 func (this *Route) Desc() string {
