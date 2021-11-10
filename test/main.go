@@ -25,6 +25,7 @@ func main() {
 
 	}()
 	wg.Wait()
+	router.SetInitGroupIsAuth(true)
 	router.AddGroup("/t1", func() {
 		router.AddRoute("GET", "/t1-r1", "t1-r1-hand", router.IsAuth(false))
 		router.AddGroup("/t2", func() {
