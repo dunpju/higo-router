@@ -12,9 +12,14 @@ var (
 	currentServe           string //当前服务
 	currentGroupPrefix     string //当前组前缀
 	currentGroupIsAuth     bool   //当前组是否鉴权(默认:false)
+	InitCurrentGroupIsAuth bool   //初始化组是否鉴权(默认:false)
 	currentGroupMiddleware []interface{}
 	lock                   *sync.Mutex
 )
+
+func init() {
+	currentGroupIsAuth = InitCurrentGroupIsAuth
+}
 
 func AddRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
 	addRoute(httpMethod, relativePath, handler, attributes...)
