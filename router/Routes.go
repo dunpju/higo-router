@@ -32,6 +32,11 @@ func (this *Routes) Route(method, url string) *Route {
 	}
 }
 
+func (this *Routes) Exist(method, url string) bool {
+	_, ok := this.routeMap[UniMd5(method, url)]
+	return ok
+}
+
 // 追加 route
 func (this *Routes) Append(route *Route) *Routes {
 	this.unimd5.Append(route.unimd5)
