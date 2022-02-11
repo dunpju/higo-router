@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"sync"
 )
 
 var (
@@ -12,7 +13,12 @@ var (
 	currentGroupPrefix     string //当前组前缀
 	currentGroupIsAuth     bool   //当前组是否鉴权(默认:false)
 	currentGroupMiddleware []interface{}
+	lock                   *sync.Mutex
 )
+
+func SetInitGroupIsAuth(b bool) {
+	currentGroupIsAuth = b
+}
 
 func AddRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
 	addRoute(httpMethod, relativePath, handler, attributes...)

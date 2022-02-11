@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/dengpju/higo-router/router"
+	"sync"
 )
 
 func Test() {
@@ -11,12 +12,27 @@ func Test() {
 
 func main() {
 
+	wg := sync.WaitGroup{}
+	go func() {
+		wg.Add(1)
+		defer wg.Done()
+
+	}()
+
+	go func() {
+		wg.Add(1)
+		defer wg.Done()
+
+	}()
+	wg.Wait()
+	router.SetInitGroupIsAuth(true)
 	router.AddGroup("/t1", func() {
 		router.AddRoute("GET", "/t1-r1", "t1-r1-hand", router.IsAuth(false))
 		router.AddGroup("/t2", func() {
 			router.AddRoute("GET", "/t2-r1", "tt2-r1-hand")
 			router.AddGroup("/t3", func() {
 				router.AddRoute("GET", "/t3-r1", "t3-r1-hand")
+				router.AddRoute("GET", "/t3-r2", "t3-r2-hand")
 			}, router.IsAuth(false))
 			router.AddRoute("GET", "/t2-r2", "t2-r2-hand")
 		}, router.IsAuth(true))
@@ -42,26 +58,31 @@ func main() {
 		})
 		router.AddRoute("GET", "/y1-r2", "y1-r2-hand")
 	})
-
-	// 增加 serve
-	router.AddServe("https").
-		AddRoute("GET", "/x1-r1", "x1-r1-hand1", router.Flag("fff"))
-	router.AddServe("http").
-		AddRoute("GET", "/x1-r11", "x1-r1-hand2")
-	router.AddRoute("GET", "/gggggggggggggggg", "y2-r2-hand")
-	router.AddServe("https").
-		AddRoute("GET", "/fffffffffff", "x1-r1-hand1").
-		Ws("/ffffffffff", "ws")
-
-	fmt.Println(len(router.GetRoutes(router.DefaultServe).List()))
+	router.AddRoute("GET", "/y1-r3", "y1-r3-hand")
+	fmt.Println(router.GetServes())
 	router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {
 		fmt.Println(route)
 	})
-	fmt.Println(router.GetServes())
-	router.GetRoutes("https").ForEach(func(index int, route *router.Route) {
-		fmt.Println(route)
-	})
-	fmt.Println(router.GetRoutes("http").Route("GET", "/y1/y2/y3/get_test"))
+
+	// 增加 serve
+	//router.AddServe("https").
+	//	AddRoute("GET", "/x1-r1", "x1-r1-hand1", router.Flag("fff"))
+	//router.AddServe("http").
+	//	AddRoute("GET", "/x1-r11", "x1-r1-hand2")
+	//router.AddRoute("GET", "/gggggggggggggggg", "y2-r2-hand")
+	//router.AddServe("https").
+	//	AddRoute("GET", "/fffffffffff", "x1-r1-hand1").
+	//	Ws("/ffffffffff", "ws")
+	//
+	//fmt.Println(len(router.GetRoutes(router.DefaultServe).List()))
+	//router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {
+	//	fmt.Println(route)
+	//})
+	//fmt.Println(router.GetServes())
+	//router.GetRoutes("https").ForEach(func(index int, route *router.Route) {
+	//	fmt.Println(route)
+	//})
+	//fmt.Println(router.GetRoutes("http").Route("GET", "/y1/y2/y3/get_test"))
 
 	/**
 	fmt.Println(len(*router.GetRoutes()))
