@@ -38,6 +38,8 @@ func (this *Routes) Route(method, url string) *Route {
 }
 
 func (this *Routes) Exist(method, url string) bool {
+	this.lock.Lock()
+	defer this.lock.Unlock()
 	_, ok := this.routeMap[UniMd5(method, url)]
 	return ok
 }
