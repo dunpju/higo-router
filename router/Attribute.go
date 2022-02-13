@@ -47,6 +47,10 @@ func IsAuth(value bool) *RouteAttribute {
 	return NewRouteAttribute(RouteIsAuth, value)
 }
 
+func IsWs(value bool) *RouteAttribute {
+	return NewRouteAttribute(RouteIsWs, value)
+}
+
 func Middleware(value interface{}) *RouteAttribute {
 	return NewRouteAttribute(RouteMiddleware, value)
 }
