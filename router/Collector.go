@@ -76,6 +76,8 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 			route.isStatic = attribute.Value.(bool)
 		} else if attribute.Name == RouteIsAuth {
 			route.isAuth = attribute.Value.(bool)
+		} else if attribute.Name == RouteIsWs {
+			route.isWs = attribute.Value.(bool)
 		} else if attribute.Name == RouteMiddleware {
 			route.middleware = append(route.middleware, attribute.Value)
 		} else if attribute.Name == RouteServe {
