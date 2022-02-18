@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -13,7 +12,6 @@ func (this RouteAttributes) Find(name string) interface{} {
 			if p.Name != RouteMiddleware && p.Name != RouteGroupMiddle {
 				return p.Value[0]
 			} else {
-				fmt.Println(p.Value)
 				return p.Value
 			}
 		}
@@ -53,6 +51,10 @@ func Desc(value string) *RouteAttribute {
 
 func IsAuth(value bool) *RouteAttribute {
 	return NewRouteAttribute(RouteIsAuth, value)
+}
+
+func IsWs(value bool) *RouteAttribute {
+	return NewRouteAttribute(RouteIsWs, value)
 }
 
 func Middleware(value ...interface{}) *RouteAttribute {
