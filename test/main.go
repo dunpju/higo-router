@@ -31,13 +31,13 @@ func main() {
 		router.AddGroup("/t2", func() {
 			router.AddRoute("GET", "/t2-r1", "tt2-r1-hand")
 			router.AddGroup("/t3", func() {
-				router.AddRoute("GET", "/t3-r1", "t3-r1-hand")
+				router.AddRoute("GET", "/t3-r1", "t3-r1-hand", router.Middleware(func() {}))
 				router.AddRoute("GET", "/t3-r2", "t3-r2-hand")
-			}, router.IsAuth(false))
+			}, router.IsAuth(false), router.GroupMiddle(func() {}))
 			router.AddRoute("GET", "/t2-r2", "t2-r2-hand")
-		}, router.IsAuth(true))
+		}, router.IsAuth(true), router.GroupMiddle(func() {}))
 		router.AddRoute("GET", "/t1-r2", "t1-r2-hand")
-	})
+	}, router.GroupMiddle(func() {}, func() {}, func() {}))
 
 	router.AddGroup("/y1", func() {
 		router.AddRoute("GET", "/y1-r1", "y1-r1-hand")

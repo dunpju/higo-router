@@ -64,24 +64,24 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 	route.isAuth = currentGroupIsAuth
 	route.relativePath = relativePath
 	route.handle = handler
-	route.groupMiddle = currentGroupMiddleware
+	route.groupMiddle = append(route.groupMiddle, currentGroupMiddleware...)
 	for _, attribute := range attributes {
 		if attribute.Name == RouteFlag {
-			route.flag = attribute.Value.(string)
+			route.flag = attribute.Value[0].(string)
 		} else if attribute.Name == RouteFrontpath {
-			route.frontPath = attribute.Value.(string)
+			route.frontPath = attribute.Value[0].(string)
 		} else if attribute.Name == RouteDesc {
-			route.desc = attribute.Value.(string)
+			route.desc = attribute.Value[0].(string)
 		} else if attribute.Name == RouteIsStatic {
-			route.isStatic = attribute.Value.(bool)
+			route.isStatic = attribute.Value[0].(bool)
 		} else if attribute.Name == RouteIsAuth {
-			route.isAuth = attribute.Value.(bool)
+			route.isAuth = attribute.Value[0].(bool)
 		} else if attribute.Name == RouteMiddleware {
-			route.middleware = append(route.middleware, attribute.Value)
+			route.middleware = append(route.middleware, attribute.Value...)
 		} else if attribute.Name == RouteServe {
-			route.serve = attribute.Value.(string)
+			route.serve = attribute.Value[0].(string)
 		} else if attribute.Name == RouteHeader {
-			route.header = attribute.Value.(http.Header)
+			route.header = attribute.Value[0].(http.Header)
 		}
 	}
 
@@ -115,7 +115,10 @@ func addGroup(prefix string, callable func(), attributes ...*RouteAttribute) {
 	if isAuth := RouteAttributes(attributes).Find(RouteIsAuth); isAuth != nil {
 		currentGroupIsAuth = isAuth.(bool)
 	}
-	currentGroupMiddleware = append(currentGroupMiddleware, RouteAttributes(attributes).Find(RouteGroupMiddle))
+
+	if nil != RouteAttributes(attributes).Find(RouteGroupMiddle) {
+		currentGroupMiddleware = append(currentGroupMiddleware, RouteAttributes(attributes).Find(RouteGroupMiddle).([]interface{})...)
+	}
 
 	callable() // 执行
 

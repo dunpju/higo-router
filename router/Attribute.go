@@ -1,13 +1,21 @@
 package router
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type RouteAttributes []*RouteAttribute
 
 func (this RouteAttributes) Find(name string) interface{} {
 	for _, p := range this {
 		if p.Name == name {
-			return p.Value
+			if p.Name != RouteMiddleware && p.Name != RouteGroupMiddle {
+				return p.Value[0]
+			} else {
+				fmt.Println(p.Value)
+				return p.Value
+			}
 		}
 	}
 	return nil
@@ -20,10 +28,10 @@ func (this RouteAttributes) Append(attribute *RouteAttribute) RouteAttributes {
 
 type RouteAttribute struct {
 	Name  string
-	Value interface{}
+	Value []interface{}
 }
 
-func NewRouteAttribute(name string, value interface{}) *RouteAttribute {
+func NewRouteAttribute(name string, value ...interface{}) *RouteAttribute {
 	return &RouteAttribute{Name: name, Value: value}
 }
 
@@ -47,12 +55,12 @@ func IsAuth(value bool) *RouteAttribute {
 	return NewRouteAttribute(RouteIsAuth, value)
 }
 
-func Middleware(value interface{}) *RouteAttribute {
-	return NewRouteAttribute(RouteMiddleware, value)
+func Middleware(value ...interface{}) *RouteAttribute {
+	return NewRouteAttribute(RouteMiddleware, value...)
 }
 
-func GroupMiddle(value interface{}) *RouteAttribute {
-	return NewRouteAttribute(RouteGroupMiddle, value)
+func GroupMiddle(value ...interface{}) *RouteAttribute {
+	return NewRouteAttribute(RouteGroupMiddle, value...)
 }
 
 func SetServe(value interface{}) *RouteAttribute {
