@@ -29,8 +29,11 @@ type RouteAttribute struct {
 	Value []interface{}
 }
 
-func NewRouteAttribute(name string, value ...interface{}) *RouteAttribute {
-	return &RouteAttribute{Name: name, Value: value}
+func NewRouteAttribute(name string, values ...interface{}) *RouteAttribute {
+	if len(values) == 0 {
+		panic("route attribute " + name + " can't be empty")
+	}
+	return &RouteAttribute{Name: name, Value: values}
 }
 
 func Flag(value string) *RouteAttribute {
