@@ -7,7 +7,12 @@ import (
 
 type Node struct {
 	isEnd    bool
+	Route    *Route
 	Children map[string]*Node
+}
+
+func (this *Node) IsEnd() bool {
+	return this.isEnd
 }
 
 func NewNode() *Node {
@@ -40,6 +45,21 @@ func (this *Trie) each(str string, fu func(s string)) {
 
 func (this *Trie) Each(fu func(n *Node)) {
 	this.node.Each(fu)
+}
+
+func (this *Trie) insert(route *Route) *Trie {
+	str := route.absolutePath
+	fmt.Println(str)
+	current := this.node
+	this.each(str, func(s string) {
+		if _, ok := current.Children[s]; !ok {
+			current.Children[s] = NewNode()
+		}
+		current = current.Children[s]
+	})
+	current.Route = route
+	current.isEnd = true
+	return this
 }
 
 func (this *Trie) Insert(str string) *Trie {

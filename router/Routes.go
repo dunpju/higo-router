@@ -12,19 +12,28 @@ type Routes struct {
 	unimd5   *UniqueString
 	unique   *UniqueString
 	list     []*Route
+	trie     *Trie
 	routeMap map[string]*Route
 	lock     *sync.Mutex
 }
 
+func (this *Routes) Trie() *Trie {
+	return this.trie
+}
+
 func NewRoutes(name string) *Routes {
 	return &Routes{serve: name, unimd5: NewUniqueString(), unique: NewUniqueString(),
-		list: make([]*Route, 0), routeMap: make(map[string]*Route), lock: new(sync.Mutex)}
+		list: make([]*Route, 0), trie: NewTrie(), routeMap: make(map[string]*Route), lock: new(sync.Mutex)}
 }
 
 func (this *Routes) ForEach(callable RoutesCallable) {
 	for key, value := range this.list {
 		callable(key, value)
 	}
+}
+
+func (this *Routes) Search(str string) (*Node, error) {
+	return this.trie.Search(str)
 }
 
 func (this *Routes) Route(method, url string) *Route {
@@ -51,6 +60,7 @@ func (this *Routes) Append(route *Route) *Routes {
 	this.unimd5.Append(route.unimd5)
 	this.unique.Append(route.unique)
 	this.list = append(this.list, route)
+	this.trie.insert(route)
 	this.routeMap[route.unimd5] = route
 	return this
 }
@@ -58,7 +68,7 @@ func (this *Routes) Append(route *Route) *Routes {
 // 收集 route
 func CollectRoute(route *Route) {
 	route.method = strings.ToUpper(route.method)
-	if ! onlySupportMethods.Exist(route.method) {
+	if !onlySupportMethods.Exist(route.method) {
 		panic(route.serve + " route " + route.method + " error, only support:" + onlySupportMethods.String())
 	}
 

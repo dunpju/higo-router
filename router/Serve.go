@@ -55,7 +55,7 @@ func (this *Serve) Routes(name string) *Routes {
 	this.lock.Lock()
 	defer this.lock.Unlock()
 	routes, ok := this.list[name]
-	if ! ok {
+	if !ok {
 		panic("Serve non-existent")
 	}
 	return routes
@@ -66,7 +66,7 @@ func (this *Serve) AddRoute(name string, route *Route) *Serve {
 	this.lock.Lock()
 	defer this.lock.Unlock()
 	routes, ok := this.list[name]
-	if ! ok {
+	if !ok {
 		panic("Serve non-existent")
 	} else {
 		routes.Append(route)

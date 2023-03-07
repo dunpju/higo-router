@@ -63,6 +63,10 @@ func main() {
 	router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {
 		fmt.Println(route)
 	})
+	router.GetRoutes(router.DefaultServe).Trie().Each(func(n *router.Node) {
+		fmt.Println(*n)
+	})
+	fmt.Println(router.GetRoutes(router.DefaultServe).Search("/y1/y1-r2"))
 
 	trie := router.NewTrie()
 	trie.Insert("/a/b/c").Insert("/a/c/d").Insert("/b/w")
