@@ -64,6 +64,9 @@ func main() {
 		fmt.Println(route)
 	})
 
+	trie := router.NewTrie()
+	trie.Insert("/a/b/c").Insert("/a/c/d").Insert("/b/w")
+
 	// 增加 serve
 	//router.AddServe("https").
 	//	AddRoute("GET", "/x1-r1", "x1-r1-hand1", router.Flag("fff"))

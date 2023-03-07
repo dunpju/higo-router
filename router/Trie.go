@@ -1,28 +1,58 @@
 package router
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
+
+type Node struct {
+	isEnd    bool
+	Children map[string]*Node
+}
+
+func NewNode() *Node {
+	return &Node{Children: make(map[string]*Node)}
+}
+
+func (this *Node) Each() {
+	for _, node := range this.Children {
+
+	}
+}
 
 type Trie struct {
-	root *Node
+	node *Node
 }
 
 func NewTrie() *Trie {
-	return &Trie{root: NewNode()}
+	return &Trie{node: NewNode()}
 }
 
-func (this *Trie) Insert(str string) {
-	current := this.root
-	for _, item := range ([]rune)(str) {
-		if _, ok := current.Children[string(item)]; !ok {
-			current.Children[string(item)] = NewNode()
-		}
-		current = current.Children[string(item)]
+func (this *Trie) each(str string, fu func(s string)) {
+	strs := strings.Split(str, "/")
+	for _, s := range strs {
+		fu(s)
 	}
+}
+
+func (this *Trie) Each(fu func(n *Node)) {
+	
+}
+
+func (this *Trie) Insert(str string) *Trie {
+	current := this.node
+	this.each(str, func(s string) {
+		if _, ok := current.Children[s]; !ok {
+			current.Children[s] = NewNode()
+		}
+		current = current.Children[s]
+	})
 	current.isEnd = true
+	return this
 }
 
 func (this *Trie) Has(str string) bool {
-	current := this.root
+	current := this.node
 	for _, item := range ([]rune)(str) {
 		if _, ok := current.Children[string(item)]; !ok {
 			return false
@@ -33,12 +63,15 @@ func (this *Trie) Has(str string) bool {
 }
 
 func (this *Trie) Search(str string) (*Node, error) {
-	current := this.root
+	current := this.node
 	for _, item := range ([]rune)(str) {
-		if node, ok := current.Children[string(item)]; !ok {
-			return node, fmt.Errorf("not found")
+		if _, ok := current.Children[string(item)]; !ok {
+			return nil, fmt.Errorf("not found")
 		}
 		current = current.Children[string(item)]
 	}
-	panic(fmt.Errorf("not found"))
+	if current.isEnd {
+		return current, nil
+	}
+	return nil, fmt.Errorf("not found")
 }
