@@ -66,6 +66,9 @@ func main() {
 
 	trie := router.NewTrie()
 	trie.Insert("/a/b/c").Insert("/a/c/d").Insert("/b/w")
+	trie.Each(func(n *router.Node) {
+		fmt.Println(*n)
+	})
 
 	// 增加 serve
 	//router.AddServe("https").

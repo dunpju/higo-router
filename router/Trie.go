@@ -14,9 +14,12 @@ func NewNode() *Node {
 	return &Node{Children: make(map[string]*Node)}
 }
 
-func (this *Node) Each() {
-	for _, node := range this.Children {
-
+func (this *Node) Each(fu func(n *Node)) {
+	fu(this)
+	if len(this.Children) > 0 {
+		for _, node := range this.Children {
+			node.Each(fu)
+		}
 	}
 }
 
@@ -36,7 +39,7 @@ func (this *Trie) each(str string, fu func(s string)) {
 }
 
 func (this *Trie) Each(fu func(n *Node)) {
-	
+	this.node.Each(fu)
 }
 
 func (this *Trie) Insert(str string) *Trie {
