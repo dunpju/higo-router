@@ -7,8 +7,13 @@ import (
 
 type Node struct {
 	isEnd    bool
+	isParam  bool
 	Route    *Route
 	Children map[string]*Node
+}
+
+func (this *Node) IsParam() bool {
+	return this.isParam
 }
 
 func (this *Node) IsEnd() bool {
@@ -54,7 +59,11 @@ func (this *Trie) insert(route *Route) *Trie {
 	current := this.node
 	this.each(str, func(s string) bool {
 		if _, ok := current.Children[s]; !ok {
-			current.Children[s] = NewNode()
+			n := NewNode()
+			if string(s[0]) == ":" {
+				n.isParam = true
+			}
+			current.Children[s] = n
 		}
 		current = current.Children[s]
 		return true
