@@ -36,10 +36,12 @@ func NewTrie() *Trie {
 	return &Trie{node: NewNode()}
 }
 
-func (this *Trie) each(str string, fu func(s string)) {
+func (this *Trie) each(str string, fu func(s string) bool) {
 	strs := strings.Split(str, "/")
 	for _, s := range strs {
-		fu(s)
+		if !fu(s) {
+			break
+		}
 	}
 }
 
@@ -49,13 +51,13 @@ func (this *Trie) Each(fu func(n *Node)) {
 
 func (this *Trie) insert(route *Route) *Trie {
 	str := route.absolutePath
-	fmt.Println(str)
 	current := this.node
-	this.each(str, func(s string) {
+	this.each(str, func(s string) bool {
 		if _, ok := current.Children[s]; !ok {
 			current.Children[s] = NewNode()
 		}
 		current = current.Children[s]
+		return true
 	})
 	current.Route = route
 	current.isEnd = true
@@ -64,11 +66,12 @@ func (this *Trie) insert(route *Route) *Trie {
 
 func (this *Trie) Insert(str string) *Trie {
 	current := this.node
-	this.each(str, func(s string) {
+	this.each(str, func(s string) bool {
 		if _, ok := current.Children[s]; !ok {
 			current.Children[s] = NewNode()
 		}
 		current = current.Children[s]
+		return true
 	})
 	current.isEnd = true
 	return this
@@ -76,22 +79,28 @@ func (this *Trie) Insert(str string) *Trie {
 
 func (this *Trie) Has(str string) bool {
 	current := this.node
-	for _, item := range ([]rune)(str) {
-		if _, ok := current.Children[string(item)]; !ok {
+	this.each(str, func(s string) bool {
+		if _, ok := current.Children[s]; !ok {
 			return false
 		}
-		current = current.Children[string(item)]
-	}
+		current = current.Children[s]
+		return true
+	})
 	return current.isEnd
 }
 
 func (this *Trie) Search(str string) (*Node, error) {
 	current := this.node
-	for _, item := range ([]rune)(str) {
-		if _, ok := current.Children[string(item)]; !ok {
-			return nil, fmt.Errorf("not found")
+	this.each(str, func(s string) bool {
+		if _, ok := current.Children[s]; !ok {
+			current = nil
+			return false
 		}
-		current = current.Children[string(item)]
+		current = current.Children[s]
+		return true
+	})
+	if current == nil {
+		return nil, fmt.Errorf("not found")
 	}
 	if current.isEnd {
 		return current, nil

@@ -52,7 +52,7 @@ func main() {
 				router.Put("/put_test", "put_test")
 				router.Delete("/delete_test", "delete_test")
 				router.Patch("/patch_test", "patch_test")
-				router.Head("/head_test", "head_test")
+				router.Head("/head_test/:id/:name", "head_test")
 			})
 			router.AddRoute("GET", "/get_test", "y2-r2-hand")
 		})
@@ -66,8 +66,20 @@ func main() {
 	router.GetRoutes(router.DefaultServe).Trie().Each(func(n *router.Node) {
 		fmt.Println(*n)
 	})
-	fmt.Println(router.GetRoutes(router.DefaultServe).Search("/y1/y1-r2"))
-
+	fmt.Println("================")
+	n, e := router.GetRoutes(router.DefaultServe).Search("/y1/y2/y3/head_test/1/ss")
+	if n != nil {
+		fmt.Println(n.Route)
+	} else {
+		fmt.Println(n, e)
+	}
+	fmt.Println("================")
+	router.GetRoutes(router.DefaultServe).Trie().Each(func(n *router.Node) {
+		fmt.Println(*n)
+	})
+	fmt.Println("================2222")
+	fmt.Println(router.GetRoutes(router.DefaultServe).Search("/y1/y1-r21"))
+	fmt.Println("================")
 	trie := router.NewTrie()
 	trie.Insert("/a/b/c").Insert("/a/c/d").Insert("/b/w")
 	trie.Each(func(n *router.Node) {
