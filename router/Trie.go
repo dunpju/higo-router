@@ -7,13 +7,15 @@ import (
 
 type Node struct {
 	isEnd    bool
-	isParam  bool
+	hasParam bool
+	suffix   string
+	Param    map[int][]string
 	Route    *Route
 	Children map[string]*Node
 }
 
-func (this *Node) IsParam() bool {
-	return this.isParam
+func (this *Node) HasParam() bool {
+	return this.hasParam
 }
 
 func (this *Node) IsEnd() bool {
@@ -21,7 +23,7 @@ func (this *Node) IsEnd() bool {
 }
 
 func NewNode() *Node {
-	return &Node{Children: make(map[string]*Node)}
+	return &Node{Param: make(map[int][]string), Children: make(map[string]*Node)}
 }
 
 func (this *Node) Each(fu func(n *Node)) {
@@ -57,17 +59,39 @@ func (this *Trie) Each(fu func(n *Node)) {
 func (this *Trie) insert(route *Route) *Trie {
 	str := route.absolutePath
 	current := this.node
+	params := make([]string, 0)
 	this.each(str, func(s string) bool {
+		if s != "" {
+			if string(s[0]) == ":" {
+				params = append(params, s)
+				return true
+			}
+		}
 		if _, ok := current.Children[s]; !ok {
 			n := NewNode()
-			if string(s[0]) == ":" {
-				n.isParam = true
-			}
 			current.Children[s] = n
+		}
+		if len(params) > 0 {
+			current.suffix = "/"
+			if _, ok := current.Param[len(params)]; ok {
+				current.Param[len(params)] = append(current.Param[len(params)], current.suffix+s)
+			} else {
+				current.Param[len(params)] = []string{current.suffix + s}
+			}
+			current.hasParam = true
 		}
 		current = current.Children[s]
 		return true
 	})
+	if len(params) > 0 && !current.hasParam {
+		current.suffix = "/"
+		if _, ok := current.Param[len(params)]; ok {
+			current.Param[len(params)] = append(current.Param[len(params)], current.suffix)
+		} else {
+			current.Param[len(params)] = []string{current.suffix}
+		}
+		current.hasParam = true
+	}
 	current.Route = route
 	current.isEnd = true
 	return this
@@ -100,14 +124,41 @@ func (this *Trie) Has(str string) bool {
 
 func (this *Trie) Search(str string) (*Node, error) {
 	current := this.node
+	paramCounter := 0
 	this.each(str, func(s string) bool {
 		if _, ok := current.Children[s]; !ok {
-			current = nil
-			return false
+			if current.hasParam {
+				paramCounter++
+			} else {
+				current = nil
+				return false
+			}
+		} else {
+			if current.hasParam {
+				if _, ok := current.Param[paramCounter]; !ok && paramCounter != 0 {
+					current = nil
+					return false
+				}
+			}
+			current = current.Children[s]
 		}
-		current = current.Children[s]
 		return true
 	})
+	if current != nil && current.hasParam {
+		if params, ok := current.Param[paramCounter]; !ok && paramCounter != 0 {
+			current = nil
+		} else {
+			hasSuffix := false
+			for _, p := range params {
+				if current.suffix == p {
+					hasSuffix = true
+				}
+			}
+			if !hasSuffix {
+				current = nil
+			}
+		}
+	}
 	if current == nil {
 		return nil, fmt.Errorf("not found")
 	}

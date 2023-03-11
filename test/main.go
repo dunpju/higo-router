@@ -52,7 +52,11 @@ func main() {
 				router.Put("/put_test", "put_test")
 				router.Delete("/delete_test", "delete_test")
 				router.Patch("/patch_test", "patch_test")
+				router.Head("/head_test", "head_test")
+				//router.Head("/head_test/:id", "head_test")
 				router.Head("/head_test/:id/:name", "head_test")
+				router.Head("/head_test/:aa/:bb", "head_test")
+				router.Head("/head_test/:id/:name/tt", "head_test")
 			})
 			router.AddRoute("GET", "/get_test", "y2-r2-hand")
 		})
@@ -67,8 +71,9 @@ func main() {
 		fmt.Println(*n)
 	})
 	fmt.Println("================")
-	n, e := router.GetRoutes(router.DefaultServe).Search("/y1/y2/y3/head_test/1/ss")
+	n, e := router.GetRoutes(router.DefaultServe).Search("/y1/y2/y3/head_test/1/gg")
 	if n != nil {
+		fmt.Println(n)
 		fmt.Println(n.Route)
 	} else {
 		fmt.Println(n, e)
