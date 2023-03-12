@@ -82,9 +82,9 @@ func main() {
 		fmt.Println(*n)
 	})
 	fmt.Println("================2222")
-	fmt.Println(router.GetRoutes(router.DefaultServe).Search(router.HEAD, "/y1/y1-r21"))
+	fmt.Println(router.GetRoutes(router.DefaultServe).Search(router.GET, "/y1/y1-r2"))
 	fmt.Println("================")
-	fmt.Println(router.GetRoutes(router.DefaultServe).Route(router.HEAD, "/y1/y2/y3/head_test/1/gg/tt"))
+	fmt.Println(router.GetRoutes(router.DefaultServe).Route(router.HEAD, "/y1/y2/y3/head_test/1/gg"))
 
 	// 增加 serve
 	//router.AddServe("https").
