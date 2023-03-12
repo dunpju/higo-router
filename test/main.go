@@ -55,7 +55,6 @@ func main() {
 				router.Head("/head_test", "head_test")
 				//router.Head("/head_test/:id", "head_test")
 				router.Head("/head_test/:id/:name", "head_test")
-				router.Head("/head_test/:aa/:bb", "head_test")
 				router.Head("/head_test/:id/:name/tt", "head_test")
 			})
 			router.AddRoute("GET", "/get_test", "y2-r2-hand")
@@ -64,7 +63,7 @@ func main() {
 	})
 	router.AddRoute("GET", "/y1-r3", "y1-r3-hand")
 	fmt.Println(router.GetServes())
-	router.GetRoutes(router.DefaultServe).ForEach(func(index int, route *router.Route) {
+	router.GetRoutes(router.DefaultServe).ForEach(func(route *router.Route) {
 		fmt.Println(route)
 	})
 	router.GetRoutes(router.DefaultServe).Trie().Each(func(n *router.Node) {
@@ -85,6 +84,7 @@ func main() {
 	fmt.Println("================2222")
 	fmt.Println(router.GetRoutes(router.DefaultServe).Search(router.HEAD, "/y1/y1-r21"))
 	fmt.Println("================")
+	fmt.Println(router.GetRoutes(router.DefaultServe).Route(router.HEAD, "/y1/y2/y3/head_test/1/gg/tt"))
 
 	// 增加 serve
 	//router.AddServe("https").

@@ -21,8 +21,6 @@ type Route struct {
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
 	groupMiddle  []interface{} // 组中间件
-	unimd5       string        // 唯一标识 md5(method + "@" + absolutePath)
-	unique       string        // 唯一标识 method + "@" + absolutePath
 	header       http.Header
 }
 
@@ -84,20 +82,6 @@ func (this *Route) GroupMiddle() interface{} {
 
 func (this *Route) Serve() string {
 	return this.serve
-}
-
-func (this *Route) GenUniMd5() *Route {
-	this.unimd5 = UniMd5(this.method, this.absolutePath)
-	this.unique = Unique(this.method, this.absolutePath)
-	return this
-}
-
-func (this *Route) UniMd5() string {
-	return this.unimd5
-}
-
-func (this *Route) Unique() string {
-	return this.unique
 }
 
 func (this *Route) Header() http.Header {

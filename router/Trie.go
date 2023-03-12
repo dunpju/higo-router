@@ -62,7 +62,9 @@ func (this *Trie) insert(route *Route) *Trie {
 	if !onlySupportMethods.Exist(route.method) {
 		panic(route.serve + " route " + route.method + " error, only support:" + onlySupportMethods.String())
 	}
-
+	if this.Has(route.method, route.absolutePath) {
+		panic(route.serve + " route " + route.method + ":" + route.absolutePath + " already exist")
+	}
 	current, ok := this.node[route.method]
 	if !ok {
 		current = NewNode()
@@ -107,6 +109,16 @@ func (this *Trie) insert(route *Route) *Trie {
 	current.Route = route
 	current.isEnd = true
 	return this
+}
+
+func (this *Trie) Has(method, str string) bool {
+	if _, ok := this.node[method]; !ok {
+		return ok
+	}
+	if _, err := this.Search(method, str); err != nil {
+		return false
+	}
+	return true
 }
 
 func (this *Trie) Search(method, str string) (*Node, error) {

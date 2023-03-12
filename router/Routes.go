@@ -5,16 +5,12 @@ import (
 	"sync"
 )
 
-type RoutesCallable func(index int, route *Route)
+type RoutesCallable func(route *Route)
 
 type Routes struct {
-	serve    string
-	unimd5   *UniqueString
-	unique   *UniqueString
-	list     []*Route
-	trie     *Trie
-	routeMap map[string]*Route
-	lock     *sync.Mutex
+	serve string
+	trie  *Trie
+	lock  *sync.Mutex
 }
 
 func (this *Routes) Trie() *Trie {
@@ -22,46 +18,46 @@ func (this *Routes) Trie() *Trie {
 }
 
 func NewRoutes(name string) *Routes {
-	return &Routes{serve: name, unimd5: NewUniqueString(), unique: NewUniqueString(),
-		list: make([]*Route, 0), trie: NewTrie(), routeMap: make(map[string]*Route), lock: new(sync.Mutex)}
+	return &Routes{serve: name, trie: NewTrie(), lock: new(sync.Mutex)}
 }
 
 func (this *Routes) ForEach(callable RoutesCallable) {
-	for key, value := range this.list {
-		callable(key, value)
-	}
+	this.trie.Each(func(n *Node) {
+		if n.Route != nil {
+			callable(n.Route)
+		}
+	})
 }
 
 func (this *Routes) Search(method, str string) (*Node, error) {
 	return this.trie.Search(method, str)
 }
 
-func (this *Routes) Route(method, url string) *Route {
+func (this *Routes) Route(method, url string) (*Route, error) {
 	this.lock.Lock()
 	defer this.lock.Unlock()
-	if route, ok := this.routeMap[UniMd5(method, url)]; ok {
-		return route
+	if node, err := this.trie.Search(method, url); err == nil {
+		return node.Route, nil
 	} else {
-		panic(route.serve + "route " + method + ":" + url + " non-existent")
+		return nil, err
 	}
 }
 
 func (this *Routes) Exist(method, url string) bool {
 	this.lock.Lock()
 	defer this.lock.Unlock()
-	_, ok := this.routeMap[UniMd5(method, url)]
-	return ok
+	if _, err := this.trie.Search(method, url); err == nil {
+		return true
+	} else {
+		return false
+	}
 }
 
 // 追加 route
 func (this *Routes) Append(route *Route) *Routes {
 	this.lock.Lock()
 	defer this.lock.Unlock()
-	this.unimd5.Append(route.unimd5)
-	this.unique.Append(route.unique)
-	this.list = append(this.list, route)
 	this.trie.insert(route)
-	this.routeMap[route.unimd5] = route
 	return this
 }
 
@@ -72,27 +68,11 @@ func CollectRoute(route *Route) {
 		panic(route.serve + " route " + route.method + " error, only support:" + onlySupportMethods.String())
 	}
 
-	// 生成唯一标识
-	route.GenUniMd5()
-
-	if serve.Routes(route.serve).Unimd5().Exist(route.unimd5) {
-		panic(route.serve + " route " + route.method + ":" + route.absolutePath + " already exist")
-	}
-
-	serve.Routes(route.serve).Unimd5().Append(route.unimd5)
 	serve.AddRoute(route.serve, route)
 }
 
 func (this *Routes) Serve() string {
 	return this.serve
-}
-
-func (this *Routes) Unimd5() *UniqueString {
-	return this.unimd5
-}
-
-func (this *Routes) List() []*Route {
-	return this.list
 }
 
 // 获取路由集
