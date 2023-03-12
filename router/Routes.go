@@ -32,8 +32,8 @@ func (this *Routes) ForEach(callable RoutesCallable) {
 	}
 }
 
-func (this *Routes) Search(str string) (*Node, error) {
-	return this.trie.Search(str)
+func (this *Routes) Search(method, str string) (*Node, error) {
+	return this.trie.Search(method, str)
 }
 
 func (this *Routes) Route(method, url string) *Route {

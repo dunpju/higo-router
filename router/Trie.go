@@ -36,14 +36,14 @@ func (this *Node) Each(fu func(n *Node)) {
 }
 
 type Trie struct {
-	node *Node
+	node map[string]*Node
 }
 
 func NewTrie() *Trie {
-	return &Trie{node: NewNode()}
+	return &Trie{node: make(map[string]*Node)}
 }
 
-func (this *Trie) each(str string, fu func(s string) bool) {
+func (this *Trie) split(str string, fu func(s string) bool) {
 	strs := strings.Split(str, "/")
 	for _, s := range strs {
 		if !fu(s) {
@@ -53,14 +53,26 @@ func (this *Trie) each(str string, fu func(s string) bool) {
 }
 
 func (this *Trie) Each(fu func(n *Node)) {
-	this.node.Each(fu)
+	for _, node := range this.node {
+		node.Each(fu)
+	}
 }
 
 func (this *Trie) insert(route *Route) *Trie {
+	if !onlySupportMethods.Exist(route.method) {
+		panic(route.serve + " route " + route.method + " error, only support:" + onlySupportMethods.String())
+	}
+
+	current, ok := this.node[route.method]
+	if !ok {
+		current = NewNode()
+		this.node[route.method] = current
+	}
+
 	str := route.absolutePath
-	current := this.node
 	params := make([]string, 0)
-	this.each(str, func(s string) bool {
+
+	this.split(str, func(s string) bool {
 		if s != "" {
 			if string(s[0]) == ":" {
 				params = append(params, s)
@@ -97,35 +109,10 @@ func (this *Trie) insert(route *Route) *Trie {
 	return this
 }
 
-func (this *Trie) Insert(str string) *Trie {
-	current := this.node
-	this.each(str, func(s string) bool {
-		if _, ok := current.Children[s]; !ok {
-			current.Children[s] = NewNode()
-		}
-		current = current.Children[s]
-		return true
-	})
-	current.isEnd = true
-	return this
-}
-
-func (this *Trie) Has(str string) bool {
-	current := this.node
-	this.each(str, func(s string) bool {
-		if _, ok := current.Children[s]; !ok {
-			return false
-		}
-		current = current.Children[s]
-		return true
-	})
-	return current.isEnd
-}
-
-func (this *Trie) Search(str string) (*Node, error) {
-	current := this.node
+func (this *Trie) Search(method, str string) (*Node, error) {
+	current := this.node[method]
 	paramCounter := 0
-	this.each(str, func(s string) bool {
+	this.split(str, func(s string) bool {
 		if _, ok := current.Children[s]; !ok {
 			if current.hasParam {
 				paramCounter++

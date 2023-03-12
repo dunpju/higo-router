@@ -71,7 +71,7 @@ func main() {
 		fmt.Println(*n)
 	})
 	fmt.Println("================")
-	n, e := router.GetRoutes(router.DefaultServe).Search("/y1/y2/y3/head_test/1/gg")
+	n, e := router.GetRoutes(router.DefaultServe).Search(router.HEAD, "/y1/y2/y3/head_test/1/gg/tt")
 	if n != nil {
 		fmt.Println(n)
 		fmt.Println(n.Route)
@@ -83,13 +83,8 @@ func main() {
 		fmt.Println(*n)
 	})
 	fmt.Println("================2222")
-	fmt.Println(router.GetRoutes(router.DefaultServe).Search("/y1/y1-r21"))
+	fmt.Println(router.GetRoutes(router.DefaultServe).Search(router.HEAD, "/y1/y1-r21"))
 	fmt.Println("================")
-	trie := router.NewTrie()
-	trie.Insert("/a/b/c").Insert("/a/c/d").Insert("/b/w")
-	trie.Each(func(n *router.Node) {
-		fmt.Println(*n)
-	})
 
 	// 增加 serve
 	//router.AddServe("https").
