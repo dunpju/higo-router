@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/dengpju/higo-router/router"
+	"github.com/dunpju/higo-router/router"
 	"sync"
 )
 
