@@ -5,19 +5,22 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
-	"sync"
 )
 
 var (
 	currentServe           string //当前服务
 	currentGroupPrefix     string //当前组前缀
 	currentGroupIsAuth     bool   //当前组是否鉴权(默认:false)
+	currentGroupIsDataAuth bool   //当前组是否数据鉴权(默认:false)
 	currentGroupMiddleware []interface{}
-	lock                   *sync.Mutex
 )
 
-func SetInitGroupIsAuth(b bool) {
+func GlobalGroupIsAuth(b bool) {
 	currentGroupIsAuth = b
+}
+
+func GlobalGroupIsDataAuth(b bool) {
+	currentGroupIsDataAuth = b
 }
 
 func AddRoute(httpMethod string, relativePath string, handler interface{}, attributes ...*RouteAttribute) {
@@ -62,6 +65,7 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 	route.method = strings.ToUpper(method)
 	route.groupPrefix = currentGroupPrefix
 	route.isAuth = currentGroupIsAuth
+	route.isDataAuth = currentGroupIsDataAuth
 	route.relativePath = relativePath
 	route.handle = handler
 	route.groupMiddle = append(route.groupMiddle, currentGroupMiddleware...)
@@ -72,16 +76,18 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 			route.frontPath = attribute.Value[0].(string)
 		} else if attribute.Name == RouteDesc {
 			route.desc = attribute.Value[0].(string)
+		} else if attribute.Name == RouteServe {
+			route.serve = attribute.Value[0].(string)
 		} else if attribute.Name == RouteIsStatic {
 			route.isStatic = attribute.Value[0].(bool)
 		} else if attribute.Name == RouteIsAuth {
 			route.isAuth = attribute.Value[0].(bool)
+		} else if attribute.Name == RouteIsDataAuth {
+			route.isDataAuth = attribute.Value[0].(bool)
 		} else if attribute.Name == RouteIsWs {
 			route.isWs = attribute.Value[0].(bool)
 		} else if attribute.Name == RouteMiddleware {
 			route.middleware = append(route.middleware, attribute.Value...)
-		} else if attribute.Name == RouteServe {
-			route.serve = attribute.Value[0].(string)
 		} else if attribute.Name == RouteHeader {
 			route.header = attribute.Value[0].(http.Header)
 		}
@@ -111,11 +117,15 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 func addGroup(prefix string, callable func(), attributes ...*RouteAttribute) {
 	previousGroupPrefix := currentGroupPrefix
 	previousGroupIsAuth := currentGroupIsAuth
+	previousGroupIsDataAuth := currentGroupIsDataAuth
 	previousGroupMiddle := currentGroupMiddleware
 
 	currentGroupPrefix = previousGroupPrefix + prefix
 	if isAuth := RouteAttributes(attributes).Find(RouteIsAuth); isAuth != nil {
 		currentGroupIsAuth = isAuth.(bool)
+	}
+	if isDataAuth := RouteAttributes(attributes).Find(RouteIsDataAuth); isDataAuth != nil {
+		currentGroupIsDataAuth = isDataAuth.(bool)
 	}
 
 	if nil != RouteAttributes(attributes).Find(RouteGroupMiddle) {
@@ -126,5 +136,6 @@ func addGroup(prefix string, callable func(), attributes ...*RouteAttribute) {
 
 	currentGroupPrefix = previousGroupPrefix
 	currentGroupIsAuth = previousGroupIsAuth
+	currentGroupIsDataAuth = previousGroupIsDataAuth
 	currentGroupMiddleware = previousGroupMiddle
 }

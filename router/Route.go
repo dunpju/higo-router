@@ -16,7 +16,8 @@ type Route struct {
 	flag         string        // 后端控制器函数标记
 	frontPath    string        // 前端 path(前端菜单路由)
 	isStatic     bool          // 是否静态文件
-	isAuth       bool          // 是否鉴权(默认:true)
+	isAuth       bool          // 是否鉴权(默认:false)
+	isDataAuth   bool          // 是否数据权限(默认:false)
 	isWs         bool          // 是否websocket
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
@@ -62,6 +63,10 @@ func (this *Route) IsStatic() bool {
 
 func (this *Route) IsAuth() bool {
 	return this.isAuth
+}
+
+func (this *Route) IsDataAuth() bool {
+	return this.isDataAuth
 }
 
 func (this *Route) IsWs() bool {

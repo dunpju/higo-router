@@ -56,6 +56,10 @@ func IsAuth(value bool) *RouteAttribute {
 	return NewRouteAttribute(RouteIsAuth, value)
 }
 
+func IsDataAuth(value bool) *RouteAttribute {
+	return NewRouteAttribute(RouteIsDataAuth, value)
+}
+
 func IsWs(value bool) *RouteAttribute {
 	return NewRouteAttribute(RouteIsWs, value)
 }

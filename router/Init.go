@@ -13,6 +13,7 @@ const (
 	RouteIsStatic     = "isStatic"
 	RouteDesc         = "desc"
 	RouteIsAuth       = "isAuth"
+	RouteIsDataAuth   = "isDataAuth"
 	RouteIsWs         = "isWs"
 	RouteMiddleware   = "middleware"
 	RouteGroupMiddle  = "groupMiddle"
