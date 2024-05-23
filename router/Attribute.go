@@ -48,6 +48,10 @@ func IsStatic(value bool) *RouteAttribute {
 	return NewRouteAttribute(RouteIsStatic, value)
 }
 
+func Title(value string) *RouteAttribute {
+	return NewRouteAttribute(RouteTitle, value)
+}
+
 func Desc(value string) *RouteAttribute {
 	return NewRouteAttribute(RouteDesc, value)
 }

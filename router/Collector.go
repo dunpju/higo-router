@@ -76,6 +76,8 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 			route.frontPath = attribute.Value[0].(string)
 		} else if attribute.Name == RouteDesc {
 			route.desc = attribute.Value[0].(string)
+		} else if attribute.Name == RouteTitle {
+			route.title = attribute.Value[0].(string)
 		} else if attribute.Name == RouteServe {
 			route.serve = attribute.Value[0].(string)
 		} else if attribute.Name == RouteIsStatic {

@@ -11,6 +11,7 @@ const (
 	RouteFlag         = "flag"
 	RouteFrontpath    = "frontPath"
 	RouteIsStatic     = "isStatic"
+	RouteTitle        = "title"
 	RouteDesc         = "desc"
 	RouteIsAuth       = "isAuth"
 	RouteIsDataAuth   = "isDataAuth"

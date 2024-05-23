@@ -19,6 +19,7 @@ type Route struct {
 	isAuth       bool          // 是否鉴权(默认:false)
 	isDataAuth   bool          // 是否数据权限(默认:false)
 	isWs         bool          // 是否websocket
+	title        string        // 标题
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
 	groupMiddle  []interface{} // 组中间件
@@ -71,6 +72,10 @@ func (this *Route) IsDataAuth() bool {
 
 func (this *Route) IsWs() bool {
 	return this.isWs
+}
+
+func (this *Route) Title() string {
+	return this.title
 }
 
 func (this *Route) Desc() string {
