@@ -26,6 +26,7 @@ func main() {
 	}()
 	wg.Wait()
 	router.GlobalGroupIsAuth(true)
+	router.GlobalGroupPrefix("/api")
 	router.GlobalGroupIsDataAuth(true)
 	router.AddGroup("/t1", func() {
 		router.AddRoute("GET", "/t1-r1", "t1-r1-hand", router.IsAuth(false))

@@ -53,7 +53,7 @@ func (this *Routes) Exist(method, url string) bool {
 	}
 }
 
-// 追加 route
+// Append 追加 route
 func (this *Routes) Append(route *Route) *Routes {
 	this.lock.Lock()
 	defer this.lock.Unlock()
@@ -61,7 +61,7 @@ func (this *Routes) Append(route *Route) *Routes {
 	return this
 }
 
-// 收集 route
+// CollectRoute 收集 route
 func CollectRoute(route *Route) {
 	route.method = strings.ToUpper(route.method)
 	if !onlySupportMethods.Exist(route.method) {
@@ -75,7 +75,7 @@ func (this *Routes) Serve() string {
 	return this.serve
 }
 
-// 获取路由集
+// GetRoutes 获取路由集
 func GetRoutes(name string) *Routes {
 	return serve.Routes(name)
 }

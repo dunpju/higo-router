@@ -13,10 +13,15 @@ var (
 	currentGroupIsAuth     bool   //当前组是否鉴权(默认:false)
 	currentGroupIsDataAuth bool   //当前组是否数据鉴权(默认:false)
 	currentGroupMiddleware []interface{}
+	globalGroupPrefix      string //全局组前缀
 )
 
 func GlobalGroupIsAuth(b bool) {
 	currentGroupIsAuth = b
+}
+
+func GlobalGroupPrefix(prefix string) {
+	globalGroupPrefix = prefix
 }
 
 func GlobalGroupIsDataAuth(b bool) {
@@ -63,7 +68,7 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 	route := newRoute()
 	route.serve = currentServe
 	route.method = strings.ToUpper(method)
-	route.groupPrefix = currentGroupPrefix
+	route.groupPrefix = globalGroupPrefix + currentGroupPrefix
 	route.isAuth = currentGroupIsAuth
 	route.isDataAuth = currentGroupIsDataAuth
 	route.relativePath = relativePath
