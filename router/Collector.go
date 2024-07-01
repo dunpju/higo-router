@@ -14,6 +14,7 @@ var (
 	currentGroupIsDataAuth bool   //当前组是否数据鉴权(默认:false)
 	currentGroupMiddleware []interface{}
 	globalGroupPrefix      string //全局组前缀
+	globalApiGroupPrefix   string //全局API组前缀
 )
 
 func GlobalGroupIsAuth(b bool) {
@@ -22,6 +23,10 @@ func GlobalGroupIsAuth(b bool) {
 
 func GlobalGroupPrefix(prefix string) {
 	globalGroupPrefix = prefix
+}
+
+func GlobalApiGroupPrefix(prefix string) {
+	globalApiGroupPrefix = prefix
 }
 
 func GlobalGroupIsDataAuth(b bool) {
@@ -68,7 +73,7 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 	route := newRoute()
 	route.serve = currentServe
 	route.method = strings.ToUpper(method)
-	route.groupPrefix = globalGroupPrefix + currentGroupPrefix
+	route.groupPrefix = globalGroupPrefix + globalApiGroupPrefix + currentGroupPrefix
 	route.isAuth = currentGroupIsAuth
 	route.isDataAuth = currentGroupIsDataAuth
 	route.relativePath = relativePath
@@ -86,6 +91,7 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 		} else if attribute.Name == RouteServe {
 			route.serve = attribute.Value[0].(string)
 		} else if attribute.Name == RouteIsStatic {
+			route.groupPrefix = globalGroupPrefix + currentGroupPrefix
 			route.isStatic = attribute.Value[0].(bool)
 		} else if attribute.Name == RouteIsAuth {
 			route.isAuth = attribute.Value[0].(bool)
