@@ -64,6 +64,14 @@ func IsDataAuth(value bool) *RouteAttribute {
 	return NewRouteAttribute(RouteIsDataAuth, value)
 }
 
+func CancelGlobalGroupPrefix(value bool) *RouteAttribute {
+	return NewRouteAttribute(RouteCancelGlobalGroupPrefix, value)
+}
+
+func CancelGlobalApiGroupPrefix(value bool) *RouteAttribute {
+	return NewRouteAttribute(RouteCancelGlobalApiGroupPrefix, value)
+}
+
 func IsWs(value bool) *RouteAttribute {
 	return NewRouteAttribute(RouteIsWs, value)
 }
