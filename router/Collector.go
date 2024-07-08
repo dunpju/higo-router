@@ -94,11 +94,11 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 			route.groupPrefix = globalGroupPrefix + currentGroupPrefix
 			route.isStatic = attribute.Value[0].(bool)
 		} else if attribute.Name == RouteCancelGlobalGroupPrefix {
-			if !attribute.Value[0].(bool) {
+			if attribute.Value[0].(bool) {
 				route.groupPrefix = strings.Replace(route.groupPrefix, globalGroupPrefix, "", 1)
 			}
 		} else if attribute.Name == RouteCancelGlobalApiGroupPrefix {
-			if !attribute.Value[0].(bool) {
+			if attribute.Value[0].(bool) {
 				route.groupPrefix = strings.Replace(route.groupPrefix, globalApiGroupPrefix, "", 1)
 			}
 		} else if attribute.Name == RouteIsAuth {
