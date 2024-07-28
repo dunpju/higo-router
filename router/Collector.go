@@ -42,7 +42,7 @@ func AddGroup(prefix string, callable func(), attributes ...*RouteAttribute) {
 }
 
 func Ws(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
-	addRoute(WEBSOCKET, relativePath, handler, attributes...)
+	addRoute(WEBSOCKET, relativePath, handler, append(attributes, IsWs(true))...)
 }
 
 func Get(relativePath string, handler interface{}, attributes ...*RouteAttribute) {
