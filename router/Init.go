@@ -20,6 +20,7 @@ const (
 	RouteIsWs                       = "isWs"
 	RouteMiddleware                 = "middleware"
 	RouteGroupMiddle                = "groupMiddle"
+	RouteGlobalMiddle               = "globalMiddle"
 	RouteServe                      = "serve"
 	RouteHeader                     = "header"
 	GET                             = "GET"

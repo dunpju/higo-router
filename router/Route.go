@@ -23,6 +23,7 @@ type Route struct {
 	desc         string        // 描述
 	middleware   []interface{} // 中间件
 	groupMiddle  []interface{} // 组中间件
+	globalMiddle []interface{} // 全局间件
 	header       http.Header
 }
 
@@ -88,6 +89,18 @@ func (this *Route) Middleware() interface{} {
 
 func (this *Route) GroupMiddle() interface{} {
 	return this.groupMiddle
+}
+
+func (this *Route) GlobalMiddle() interface{} {
+	return this.globalMiddle
+}
+
+func (this *Route) Middlewares() []interface{} {
+	middlewares := make([]interface{}, 0)
+	middlewares = append(middlewares, this.globalMiddle...)
+	middlewares = append(middlewares, this.groupMiddle...)
+	middlewares = append(middlewares, this.middleware...)
+	return middlewares
 }
 
 func (this *Route) Serve() string {

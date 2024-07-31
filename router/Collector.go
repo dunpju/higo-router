@@ -109,6 +109,8 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 			route.isWs = attribute.Value[0].(bool)
 		} else if attribute.Name == RouteMiddleware {
 			route.middleware = append(route.middleware, attribute.Value...)
+		} else if attribute.Name == RouteGlobalMiddle {
+			route.globalMiddle = append(route.globalMiddle, attribute.Value...)
 		} else if attribute.Name == RouteHeader {
 			route.header = attribute.Value[0].(http.Header)
 		}
