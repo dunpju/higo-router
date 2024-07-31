@@ -9,7 +9,7 @@ type RouteAttributes []*RouteAttribute
 func (this RouteAttributes) Find(name string) interface{} {
 	for _, p := range this {
 		if p.Name == name {
-			if p.Name != RouteMiddleware && p.Name != RouteGroupMiddle {
+			if p.Name != RouteMiddleware && p.Name != RouteGroupMiddle && p.Name != RouteGlobalMiddle {
 				return p.Value[0]
 			} else {
 				return p.Value
@@ -82,6 +82,10 @@ func Middleware(value ...interface{}) *RouteAttribute {
 
 func GroupMiddle(value ...interface{}) *RouteAttribute {
 	return NewRouteAttribute(RouteGroupMiddle, value...)
+}
+
+func GlobalMiddle(value ...interface{}) *RouteAttribute {
+	return NewRouteAttribute(RouteGlobalMiddle, value...)
 }
 
 func SetServe(value interface{}) *RouteAttribute {
