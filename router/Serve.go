@@ -35,13 +35,13 @@ func (this *RoutesMap) Len() int {
 }
 
 type Serve struct {
-	sort []string
+	sort *Sort[string]
 	list *RoutesMap
 	lock *sync.Mutex
 }
 
 func NewServe(name string) *Serve {
-	serve := &Serve{sort: make([]string, 0), list: newRouteMap(), lock: new(sync.Mutex)}
+	serve := &Serve{sort: newSort[string](), list: newRouteMap(), lock: new(sync.Mutex)}
 	serve.Append(NewRoutes(name))
 	return serve
 }
@@ -57,7 +57,7 @@ func AddServe(name string) *Routes {
 	return routes
 }
 
-func (this *Serve) Sort() []string {
+func (this *Serve) Sort() *Sort[string] {
 	return this.sort
 }
 
@@ -69,7 +69,7 @@ func (this *Serve) List() *RoutesMap {
 func (this *Serve) Append(routes *Routes) *Serve {
 	this.lock.Lock()
 	defer this.lock.Unlock()
-	this.sort = append(this.sort, routes.serve)
+	this.sort.Append(routes.serve)
 	this.list.Put(routes.serve, routes)
 	return this
 }
@@ -109,10 +109,11 @@ func (this *Serve) AddRoute(name string, route *Route) *Serve {
 func (this *Serve) ForEach(callable StringCallable) {
 	this.lock.Lock()
 	defer this.lock.Unlock()
-	for _, index := range this.sort {
-		value, _ := this.list.Get(index)
-		callable(index, value)
-	}
+	this.sort.Range(func(index int, key string) bool {
+		value, _ := this.list.Get(key)
+		callable(key, value)
+		return true
+	})
 }
 
 // GetServes 获取 serves
