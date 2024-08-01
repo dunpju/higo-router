@@ -116,6 +116,13 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 		}
 	}
 
+	switch route.handle.(type) {
+	case string, int, int64, int32, int8, int16:
+	default:
+		route.reflectValue = reflect.ValueOf(route.handle)
+		route.funcForPcName = runtime.FuncForPC(route.reflectValue.Pointer()).Name()
+	}
+
 	if "" == route.flag {
 		if handle, ok := route.handle.(string); ok {
 			route.flag = handle

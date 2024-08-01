@@ -30,7 +30,7 @@ func main() {
 	router.GlobalGroupIsDataAuth(true)
 	router.AddGroup("/t1", func() {
 		router.AddGroup("/t1", func() {
-			router.AddRoute("GET", "/t1-r1", "t1-r1-hand", router.IsAuth(false))
+			router.AddRoute("GET", "/t1-r1", func() {}, router.IsAuth(false))
 			router.AddGroup("/t2", func() {
 				router.AddRoute("GET", "/t2-r1", "tt2-r1-hand")
 				router.AddGroup("/t3", func() {
