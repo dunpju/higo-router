@@ -3,16 +3,16 @@ package router
 import "sync"
 
 type RoutesMap struct {
-	sort []string
+	sort *Sort
 	list sync.Map
 }
 
 func newRouteMap() *RoutesMap {
-	return &RoutesMap{list: sync.Map{}}
+	return &RoutesMap{sort: newSort(), list: sync.Map{}}
 }
 
 func (this *RoutesMap) Put(key string, routes *Routes) {
-	this.sort = append(this.sort, key)
+	this.sort.Append(key)
 	this.list.Store(key, routes)
 }
 
@@ -24,12 +24,14 @@ func (this *RoutesMap) Get(key string) (*Routes, bool) {
 }
 
 func (this *RoutesMap) Range(fn func(key string, value *Routes) bool) {
-	for _, key := range this.sort {
+	this.sort.Range(func(index int, key string) bool {
 		value, _ := this.Get(key)
-		if !fn(key, value) {
-			break
-		}
-	}
+		return fn(key, value)
+	})
+}
+
+func (this *RoutesMap) Len() int {
+	return this.sort.Len()
 }
 
 type Serve struct {
