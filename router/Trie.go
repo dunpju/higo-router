@@ -10,8 +10,8 @@ type Sort[T int | string] struct {
 	sort []T
 }
 
-func newSort[T int | string]() *Sort {
-	return &Sort{sort: make([]T, 0)}
+func newSort[T int | string]() *Sort[T] {
+	return &Sort[T]{sort: make([]T, 0)}
 }
 
 func (this *Sort[T]) Exist(value T) bool {
@@ -23,13 +23,13 @@ func (this *Sort[T]) Exist(value T) bool {
 	return false
 }
 
-func (this *Sort) Append(value string) {
+func (this *Sort[T]) Append(value T) {
 	if !this.Exist(value) {
 		this.sort = append(this.sort, value)
 	}
 }
 
-func (this *Sort) Range(fn func(index int, value string) bool) {
+func (this *Sort[T]) Range(fn func(index int, value T) bool) {
 	for i, v := range this.sort {
 		if !fn(i, v) {
 			break
@@ -37,17 +37,17 @@ func (this *Sort) Range(fn func(index int, value string) bool) {
 	}
 }
 
-func (this *Sort) Len() int {
+func (this *Sort[T]) Len() int {
 	return len(this.sort)
 }
 
 type NodeMap struct {
-	sort *Sort
+	sort *Sort[string]
 	list sync.Map
 }
 
 func newNodeMap() *NodeMap {
-	return &NodeMap{sort: newSort(), list: sync.Map{}}
+	return &NodeMap{sort: newSort[string](), list: sync.Map{}}
 }
 
 func (this *NodeMap) Put(key string, node *Node) {
@@ -74,16 +74,16 @@ func (this *NodeMap) Len() int {
 }
 
 type ParamMap struct {
-	sort []int
+	sort *Sort[int]
 	list sync.Map
 }
 
 func newParamMap() *ParamMap {
-	return &ParamMap{sort: make([]int, 0), list: sync.Map{}}
+	return &ParamMap{sort: newSort[int](), list: sync.Map{}}
 }
 
 func (this *ParamMap) Put(key int, value []string) {
-	this.sort = append(this.sort, key)
+	this.sort.Append(key)
 	this.list.Store(key, value)
 }
 
@@ -101,16 +101,14 @@ func (this *ParamMap) Get(key int) ([]string, bool) {
 }
 
 func (this *ParamMap) Range(fn func(key int, value []string) bool) {
-	for _, key := range this.sort {
+	this.sort.Range(func(index int, key int) bool {
 		value, _ := this.Get(key)
-		if !fn(key, value) {
-			break
-		}
-	}
+		return fn(key, value)
+	})
 }
 
 func (this *ParamMap) Len() int {
-	return len(this.sort)
+	return this.sort.Len()
 }
 
 type Node struct {

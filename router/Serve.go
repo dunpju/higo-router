@@ -3,12 +3,12 @@ package router
 import "sync"
 
 type RoutesMap struct {
-	sort *Sort
+	sort *Sort[string]
 	list sync.Map
 }
 
 func newRouteMap() *RoutesMap {
-	return &RoutesMap{sort: newSort(), list: sync.Map{}}
+	return &RoutesMap{sort: newSort[string](), list: sync.Map{}}
 }
 
 func (this *RoutesMap) Put(key string, routes *Routes) {
