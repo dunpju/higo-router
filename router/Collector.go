@@ -141,6 +141,16 @@ func addRoute(method string, relativePath string, handler interface{}, attribute
 
 	route.absolutePath = route.groupPrefix + route.relativePath
 
+	for _, middle := range route.globalMiddle {
+		route.middlewares = append(route.middlewares, newMiddle(middle))
+	}
+	for _, middle := range route.groupMiddle {
+		route.middlewares = append(route.middlewares, newMiddle(middle))
+	}
+	for _, middle := range route.middleware {
+		route.middlewares = append(route.middlewares, newMiddle(middle))
+	}
+
 	CollectRoute(route)
 }
 
