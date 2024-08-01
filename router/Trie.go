@@ -6,15 +6,15 @@ import (
 	"sync"
 )
 
-type Sort[T any] struct {
+type Sort[T int | string] struct {
 	sort []T
 }
 
-func newSort[T]() *Sort {
-	return &Sort{sort: new([]T)}
+func newSort[T int | string]() *Sort {
+	return &Sort{sort: make([]T, 0)}
 }
 
-func (this *Sort[T]) Exist(value string) bool {
+func (this *Sort[T]) Exist(value T) bool {
 	for _, v := range this.sort {
 		if v == value {
 			return true
