@@ -3,15 +3,123 @@ package router
 import (
 	"fmt"
 	"strings"
+	"sync"
 )
+
+type Sort[T int | string] struct {
+	sort []T
+}
+
+func newSort[T int | string]() *Sort {
+	return &Sort{sort: make([]T, 0)}
+}
+
+func (this *Sort[T]) Exist(value T) bool {
+	for _, v := range this.sort {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+func (this *Sort) Append(value string) {
+	if !this.Exist(value) {
+		this.sort = append(this.sort, value)
+	}
+}
+
+func (this *Sort) Range(fn func(index int, value string) bool) {
+	for i, v := range this.sort {
+		if !fn(i, v) {
+			break
+		}
+	}
+}
+
+func (this *Sort) Len() int {
+	return len(this.sort)
+}
+
+type NodeMap struct {
+	sort *Sort
+	list sync.Map
+}
+
+func newNodeMap() *NodeMap {
+	return &NodeMap{sort: newSort(), list: sync.Map{}}
+}
+
+func (this *NodeMap) Put(key string, node *Node) {
+	this.sort.Append(key)
+	this.list.Store(key, node)
+}
+
+func (this *NodeMap) Get(key string) (*Node, bool) {
+	if node, ok := this.list.Load(key); ok {
+		return node.(*Node), ok
+	}
+	return nil, false
+}
+
+func (this *NodeMap) Range(fn func(key string, node *Node) bool) {
+	this.sort.Range(func(index int, value string) bool {
+		node, _ := this.Get(value)
+		return fn(value, node)
+	})
+}
+
+func (this *NodeMap) Len() int {
+	return this.sort.Len()
+}
+
+type ParamMap struct {
+	sort []int
+	list sync.Map
+}
+
+func newParamMap() *ParamMap {
+	return &ParamMap{sort: make([]int, 0), list: sync.Map{}}
+}
+
+func (this *ParamMap) Put(key int, value []string) {
+	this.sort = append(this.sort, key)
+	this.list.Store(key, value)
+}
+
+func (this *ParamMap) Append(key int, value string) {
+	values, _ := this.Get(key)
+	values = append(values, value)
+	this.list.Store(key, values)
+}
+
+func (this *ParamMap) Get(key int) ([]string, bool) {
+	if value, ok := this.list.Load(key); ok {
+		return value.([]string), ok
+	}
+	return nil, false
+}
+
+func (this *ParamMap) Range(fn func(key int, value []string) bool) {
+	for _, key := range this.sort {
+		value, _ := this.Get(key)
+		if !fn(key, value) {
+			break
+		}
+	}
+}
+
+func (this *ParamMap) Len() int {
+	return len(this.sort)
+}
 
 type Node struct {
 	isEnd    bool
 	hasParam bool
 	suffix   string
-	Param    map[int][]string
+	Param    *ParamMap
 	Route    *Route
-	Children map[string]*Node
+	Children *NodeMap
 }
 
 func (this *Node) HasParam() bool {
@@ -23,24 +131,25 @@ func (this *Node) IsEnd() bool {
 }
 
 func NewNode() *Node {
-	return &Node{Param: make(map[int][]string), Children: make(map[string]*Node)}
+	return &Node{Param: newParamMap(), Children: newNodeMap()}
 }
 
 func (this *Node) Each(fu func(n *Node)) {
 	fu(this)
-	if len(this.Children) > 0 {
-		for _, node := range this.Children {
+	if this.Children.Len() > 0 {
+		this.Children.Range(func(key string, node *Node) bool {
 			node.Each(fu)
-		}
+			return true
+		})
 	}
 }
 
 type Trie struct {
-	node map[string]*Node
+	node *NodeMap
 }
 
 func NewTrie() *Trie {
-	return &Trie{node: make(map[string]*Node)}
+	return &Trie{node: newNodeMap()}
 }
 
 func (this *Trie) split(str string, fu func(s string) bool) {
@@ -53,9 +162,10 @@ func (this *Trie) split(str string, fu func(s string) bool) {
 }
 
 func (this *Trie) Each(fu func(n *Node)) {
-	for _, node := range this.node {
+	this.node.Range(func(key string, node *Node) bool {
 		node.Each(fu)
-	}
+		return true
+	})
 }
 
 func (this *Trie) insert(route *Route) *Trie {
@@ -65,10 +175,10 @@ func (this *Trie) insert(route *Route) *Trie {
 	if this.Has(route.method, route.absolutePath) {
 		panic(route.serve + " route " + route.method + ":" + route.absolutePath + " already exist")
 	}
-	current, ok := this.node[route.method]
+	current, ok := this.node.Get(route.method)
 	if !ok {
 		current = NewNode()
-		this.node[route.method] = current
+		this.node.Put(route.method, current)
 	}
 
 	str := route.absolutePath
@@ -81,28 +191,28 @@ func (this *Trie) insert(route *Route) *Trie {
 				return true
 			}
 		}
-		if _, ok := current.Children[s]; !ok {
+		if _, ok := current.Children.Get(s); !ok {
 			n := NewNode()
-			current.Children[s] = n
+			current.Children.Put(s, n)
 		}
 		if len(params) > 0 {
 			current.suffix = "/"
-			if _, ok := current.Param[len(params)]; ok {
-				current.Param[len(params)] = append(current.Param[len(params)], current.suffix+s)
+			if _, ok := current.Param.Get(len(params)); ok {
+				current.Param.Append(len(params), current.suffix+s)
 			} else {
-				current.Param[len(params)] = []string{current.suffix + s}
+				current.Param.Put(len(params), []string{current.suffix + s})
 			}
 			current.hasParam = true
 		}
-		current = current.Children[s]
+		current, _ = current.Children.Get(s)
 		return true
 	})
 	if len(params) > 0 && !current.hasParam {
 		current.suffix = "/"
-		if _, ok := current.Param[len(params)]; ok {
-			current.Param[len(params)] = append(current.Param[len(params)], current.suffix)
+		if _, ok := current.Param.Get(len(params)); ok {
+			current.Param.Append(len(params), current.suffix)
 		} else {
-			current.Param[len(params)] = []string{current.suffix}
+			current.Param.Put(len(params), []string{current.suffix})
 		}
 		current.hasParam = true
 	}
@@ -112,7 +222,7 @@ func (this *Trie) insert(route *Route) *Trie {
 }
 
 func (this *Trie) Has(method, str string) bool {
-	if _, ok := this.node[method]; !ok {
+	if _, ok := this.node.Get(method); !ok {
 		return ok
 	}
 	if _, err := this.Search(method, str); err != nil {
@@ -122,10 +232,10 @@ func (this *Trie) Has(method, str string) bool {
 }
 
 func (this *Trie) Search(method, str string) (*Node, error) {
-	current := this.node[method]
+	current, _ := this.node.Get(method)
 	paramCounter := 0
 	this.split(str, func(s string) bool {
-		if _, ok := current.Children[s]; !ok {
+		if _, ok := current.Children.Get(s); !ok {
 			if current.hasParam {
 				paramCounter++
 			} else {
@@ -134,17 +244,17 @@ func (this *Trie) Search(method, str string) (*Node, error) {
 			}
 		} else {
 			if current.hasParam {
-				if _, ok := current.Param[paramCounter]; !ok && paramCounter != 0 {
+				if _, ok := current.Param.Get(paramCounter); !ok && paramCounter != 0 {
 					current = nil
 					return false
 				}
 			}
-			current = current.Children[s]
+			current, _ = current.Children.Get(s)
 		}
 		return true
 	})
 	if current != nil && current.hasParam {
-		if params, ok := current.Param[paramCounter]; !ok && paramCounter != 0 {
+		if params, ok := current.Param.Get(paramCounter); !ok && paramCounter != 0 {
 			current = nil
 		} else {
 			hasSuffix := false
