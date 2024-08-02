@@ -5,37 +5,7 @@ import (
 	"encoding/hex"
 	"net/http"
 	"reflect"
-	"runtime"
 )
-
-type Middle struct {
-	handlerFunc   interface{}
-	reflectValue  reflect.Value
-	funcForPcName string
-}
-
-func newMiddle(handlerFunc interface{}) *Middle {
-	middle := &Middle{handlerFunc: handlerFunc}
-	switch handlerFunc.(type) {
-	case string, int, int64, int32, int8, int16:
-	default:
-		middle.reflectValue = reflect.ValueOf(handlerFunc)
-		middle.funcForPcName = runtime.FuncForPC(middle.reflectValue.Pointer()).Name()
-	}
-	return middle
-}
-
-func (m *Middle) HandlerFunc() interface{} {
-	return m.handlerFunc
-}
-
-func (m *Middle) ReflectValue() reflect.Value {
-	return m.reflectValue
-}
-
-func (m *Middle) FuncForPcName() string {
-	return m.funcForPcName
-}
 
 type Route struct {
 	serve         string        // 服务
@@ -55,14 +25,15 @@ type Route struct {
 	middleware    []interface{} // 中间件
 	groupMiddle   []interface{} // 组中间件
 	globalMiddle  []interface{} // 全局间件
-	middlewares   []*Middle
+	handlers      []*Handler
+	middlewares   []*Handler
 	header        http.Header
 	reflectValue  reflect.Value
 	funcForPcName string
 }
 
 func newRoute() *Route {
-	return &Route{middlewares: make([]*Middle, 0)}
+	return &Route{handlers: make([]*Handler, 0), middlewares: make([]*Handler, 0)}
 }
 
 func (this *Route) Prefix() string {
@@ -129,8 +100,12 @@ func (this *Route) GlobalMiddle() interface{} {
 	return this.globalMiddle
 }
 
-func (this *Route) Middlewares() []*Middle {
+func (this *Route) Middlewares() []*Handler {
 	return this.middlewares
+}
+
+func (this *Route) Handlers() []*Handler {
+	return this.handlers
 }
 
 func (this *Route) Serve() string {
