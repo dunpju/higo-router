@@ -114,6 +114,9 @@ func (this *Trie) Search(method, str string) (*Node, error) {
 				}
 			}
 			current, _ = current.Children.Get(s)
+			if current == nil {
+				return false
+			}
 		}
 		return true
 	})
