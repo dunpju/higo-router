@@ -94,6 +94,9 @@ func (this *Trie) Has(method, str string) bool {
 
 func (this *Trie) Search(method, str string) (*Node, error) {
 	current, _ := this.node.Get(method)
+	if current == nil {
+		return nil, fmt.Errorf("not found")
+	}
 	paramCounter := 0
 	this.split(str, func(s string) bool {
 		if _, ok := current.Children.Get(s); !ok {
