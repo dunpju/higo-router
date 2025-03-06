@@ -95,7 +95,7 @@ func (this *Trie) Has(method, str string) bool {
 func (this *Trie) Search(method, str string) (*Node, error) {
 	current, _ := this.node.Get(method)
 	if current == nil {
-		return nil, fmt.Errorf("not found")
+		return nil, fmt.Errorf(method + " not found")
 	}
 	paramCounter := 0
 	this.split(str, func(s string) bool {
@@ -136,7 +136,7 @@ func (this *Trie) Search(method, str string) (*Node, error) {
 		}
 	}
 	if current == nil {
-		return nil, fmt.Errorf("not found")
+		return nil, fmt.Errorf("current not found")
 	}
 	if current.isEnd {
 		return current, nil
