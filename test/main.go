@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/dunpju/higo-router/router"
+	"strings"
 	"sync"
 )
 
@@ -11,6 +12,13 @@ func Test() {
 }
 
 func main() {
+
+	strs := strings.Split("", "/")
+	fmt.Println(strs)
+	for _, s := range strs {
+		fmt.Println(s)
+	}
+	return
 
 	wg := sync.WaitGroup{}
 	go func() {
